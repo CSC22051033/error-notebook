@@ -54,6 +54,7 @@
                     <option value="html">HTML</option>
                     <option value="css">CSS</option>
                     <option value="javascript">JavaScript</option>
+                    <option value="vue">Vue</option>
                 </optgroup>
             </select>
         </div>

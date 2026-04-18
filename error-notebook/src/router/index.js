@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ImportView from '../views/ImportView.vue'
 import ListView from '../views/ListView.vue'
+import QuestionView from '../views/QuestionView.vue'
 
 const routes = [
   {
@@ -15,6 +16,11 @@ const routes = [
     path: '/list',
     name: 'List',
     component: ListView
+  },
+  {
+    path: '/questions/:id',
+    name: 'Question',
+    component: QuestionView
   }
 ]
 

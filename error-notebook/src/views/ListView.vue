@@ -59,8 +59,8 @@ onMounted(() => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="q in questions" :key="q.index">
-                    <td>{{ q.index }}</td>
+                <tr v-for="q in questions" :key="q.id">
+                    <td><a :href="`/questions/${q.id}`">{{ q.id }}</a></td>
                     <td>{{ q.knowledgeType }}</td>
                     <td>{{ getTypeText(q.questionType) }}</td>
                     <td class="stem">{{ q.questionStem }}</td>
@@ -79,8 +79,10 @@ onMounted(() => {
 <style scoped>
 .container {
     max-width: 1200px;
+    min-height: 600px;
     margin: 0 auto;
     padding: 20px;
+    background-color: #fff;
 }
 
 h2 {

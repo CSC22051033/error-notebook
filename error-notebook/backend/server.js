@@ -10,13 +10,53 @@ app.use(express.json());
 
 const CSV_FILE = path.join(__dirname, 'questions.csv');
 
+// 去掉 BOM 的辅助函数
+function removeBOM(content) {
+    if (content.charCodeAt(0) === 0xFEFF) {
+        return content.slice(1);
+    }
+    return content;
+}
+
 // 确保CSV文件存在，不存在则创建表头
 function initCSV() {
     if (!fs.existsSync(CSV_FILE)) {
         const BOM = '\uFEFF';
-        const headers = ['知识类型', '题干', '题目类型', '题目内容', '选项A', '选项B', '选项C', '选项D', '正确答案', '解析'];
+        const headers = ['ID', '知识类型', '题干', '题目类型', '题目内容', '选项A', '选项B', '选项C', '选项D', '正确答案', '解析'];
         fs.writeFileSync(CSV_FILE, BOM + headers.join(',') + '\n', 'utf8');
     }
+}
+
+// 获取下一个ID（读取现有数据，找到最大ID+1）
+function getNextId() {
+    if (!fs.existsSync(CSV_FILE)) {
+        return 1;
+    }
+    
+    let content = fs.readFileSync(CSV_FILE, 'utf8');
+    content = removeBOM(content); // 去掉 BOM
+    
+    const lines = content.split('\n').filter(line => line.trim() !== '');
+    
+    if (lines.length <= 1) {
+        return 1;
+    }
+    
+    let maxId = 0;
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line.trim()) continue;
+        
+        const firstComma = line.indexOf(',');
+        const idStr = firstComma > -1 ? line.substring(0, firstComma) : line;
+        const id = parseInt(idStr, 10);
+        
+        if (!isNaN(id) && id > maxId) {
+            maxId = id;
+        }
+    }
+    
+    return maxId + 1;
 }
 
 // 处理特殊字符
@@ -35,7 +75,10 @@ app.post('/api/questions', (req, res) => {
         initCSV();
         
         const data = req.body;
+        const nextId = getNextId();
+        
         const row = [
+            nextId,
             data.knowledgeType,
             data.questionStem,
             data.questionType,
@@ -51,7 +94,7 @@ app.post('/api/questions', (req, res) => {
         const csvLine = row.map(escapeCSV).join(',') + '\n';
         fs.appendFileSync(CSV_FILE, csvLine, 'utf8');
         
-        res.json({ success: true, message: '数据已追加到CSV' });
+        res.json({ success: true, message: '数据已追加到CSV', id: nextId });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
@@ -65,43 +108,17 @@ app.get('/api/download', (req, res) => {
     res.download(CSV_FILE, 'questions.csv');
 });
 
-// 获取所有数据
+// 获取所有数据（原始行）
 app.get('/api/questions', (req, res) => {
     if (!fs.existsSync(CSV_FILE)) {
         return res.json([]);
     }
-    const content = fs.readFileSync(CSV_FILE, 'utf8');
+    let content = fs.readFileSync(CSV_FILE, 'utf8');
+    content = removeBOM(content); // 去掉 BOM
+    
     const lines = content.split('\n').filter(line => line.trim());
     res.json({ data: lines });
 });
-
-// 在 app.listen 之前添加
-
-// 解析CSV行（处理引号内的逗号）
-function parseCSVLine(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
-    
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        if (char === '"') {
-            if (inQuotes && line[i + 1] === '"') {
-                current += '"';
-                i++;
-            } else {
-                inQuotes = !inQuotes;
-            }
-        } else if (char === ',' && !inQuotes) {
-            result.push(current.trim());
-            current = '';
-        } else {
-            current += char;
-        }
-    }
-    result.push(current.trim());
-    return result;
-}
 
 // 解析CSV行（处理引号内的逗号和换行）
 function parseCSVLine(lines, startIndex) {
@@ -147,7 +164,9 @@ function readCSV() {
         return { headers: [], data: [] };
     }
     
-    const content = fs.readFileSync(CSV_FILE, 'utf8');
+    let content = fs.readFileSync(CSV_FILE, 'utf8');
+    content = removeBOM(content); // 去掉 BOM
+    
     const lines = content.split('\n').filter(line => line.trim() !== '');
     
     if (lines.length === 0) {
@@ -163,12 +182,20 @@ function readCSV() {
         const rowResult = parseCSVLine(lines, index);
         const fields = rowResult.fields;
         
-        if (fields.length >= 3) {
+        if (fields.length >= 4) {
             data.push({
                 index: rowNum++,
-                knowledgeType: fields[0] || '',
-                questionStem: fields[1] || '',
-                questionType: fields[2] || ''
+                id: fields[0] || '',
+                knowledgeType: fields[1] || '',
+                questionStem: fields[2] || '',
+                questionType: fields[3] || '',
+                questionContent: fields[4] || '',
+                optionA: fields[5] || '',
+                optionB: fields[6] || '',
+                optionC: fields[7] || '',
+                optionD: fields[8] || '',
+                answer: fields[9] || '',
+                analysis: fields[10] || ''
             });
         }
         
