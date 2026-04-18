@@ -53,13 +53,28 @@ onMounted(() => {
         <div v-if="loading" class="loading">加载中...</div>
         <div v-if="error" class="error">{{ error }}</div>
         <div v-if="question">
-            <h2>{{ question.id }}. {{ question.questionStem }}</h2>
+            <div>
+                <label>{{ typeMap[question.questionType] }}</label>
+                <label>{{ question.knowledgeType }}</label>
+                <h2>{{ question.id }}. {{ question.questionStem }}</h2>
+            </div>
             <pre>{{ question.questionContent }}</pre>
             <div v-if="question.questionType === 'single' || question.questionType === 'multiple'">
                 <div class="option"><pre class="option-li">A</pre><pre>{{ question.optionA }}</pre></div>
                 <div class="option"><pre class="option-li">B</pre><pre>{{ question.optionB }}</pre></div>
                 <div class="option"><pre class="option-li">C</pre><pre>{{ question.optionC }}</pre></div>
                 <div class="option"><pre class="option-li">D</pre><pre>{{ question.optionD }}</pre></div>
+            </div>
+
+            <div class="analysis">
+                <pre>正确答案: <a class="answer">{{ question.answer }}</a></pre>
+                <pre>解析: <br>{{ question.analysis }}</br></pre>
+            </div>
+
+            <div class="bottom-button">
+                <button><a :href="`/questions/${parseInt(question.id) - 1}`">上一题</a></button>
+                <button>确认</button>
+                <button><a :href="`/questions/${parseInt(question.id) + 1}`">下一题</a></button>
             </div>
         </div>
     </div>
@@ -83,6 +98,7 @@ pre {
     display: flex;
     align-items: center;
     height: 45px;
+    width: 100%;
 }
 
 .option-li{
@@ -93,5 +109,41 @@ pre {
     display: flex;           /* 使用 flex 布局 */
     align-items: center;     /* 垂直居中 */
     justify-content: center; /* 水平居中 */
+}
+
+label {
+    margin-right: 20px;
+    font-size: 1rem;
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(227, 243, 255, 1);
+    color: rgba(0, 117, 255, 1);
+    display: inline-block;
+}
+
+.analysis{
+    background-color: rgba(248, 248, 248, 1);
+}
+
+.answer{
+    color: green;
+    font-weight: bolder;
+}
+
+.bottom-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    gap: 16px;
+}
+
+/* 按钮基础样式 */
+.bottom-button button,
+.bottom-button .btn {
+    font-size: 20px;
+    font-weight: 500;
 }
 </style>

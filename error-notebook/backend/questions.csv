@@ -1,4 +1,4 @@
-﻿ID,知识类型,题干,题目类型,题目内容,选项A,选项B,选项C,选项D,正确答案,解析
+"ID",知识类型,题干,题目类型,题目内容,选项A,选项B,选项C,选项D,正确答案,解析
 1,javascript,执行以下程序，输出结果为（）,single,"function a(){
   var a = 1,b = 2;
   var c = d = '1';
@@ -6,5 +6,22 @@
 a();
 console.log(typeof b);
 console.log(typeof d);
-",undefined undefined,undefined string,number undefined,抛出异常,B,
-2,javascript,下面表达式的结果是（）,single,void();,undefined,TypeError,null,SyntaxError,D,
+",undefined undefined,undefined string,number undefined,抛出异常,B,"代码等价于
+function a(){
+  // 变量提升后的等价代码：
+  var a;           // 声明提升到函数顶部
+  var b;           // 声明提升到函数顶部  
+  var c;           // 声明提升到函数顶部
+  
+  a = 1;
+  b = 2;
+  d = '1';         // 隐式全局变量（没有提升，执行到这里才创建）
+  c = d;
+}
+
+a();
+console.log(typeof b);  // """"undefined""""（b 是局部变量，外部访问不到）
+console.log(typeof d);  // """"string""""（d 是全局变量）
+"
+2,javascript,下面表达式的结果是（）,single,void();,undefined,TypeError,null,SyntaxError,D,"void();  // SyntaxError: Unexpected token ')'
+//    解析器期望一个表达式，但遇到了空括号"
