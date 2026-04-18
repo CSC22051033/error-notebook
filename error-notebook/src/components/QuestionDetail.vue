@@ -9,12 +9,18 @@ const loading = ref(false)
 const error = ref('')
 const question = ref(null)
 
+const showAnswer = ref(false)
+
 // 题目类型映射
 const typeMap = {
     'single': '单选题',
     'multiple': '多选题',
     'truefalse': '判断题',
     'shortanswer': '简答题'
+}
+
+function toggleAnswer() {
+    showAnswer.value = !showAnswer.value
 }
 
 async function fetchDetail() {
@@ -66,14 +72,14 @@ onMounted(() => {
                 <div class="option"><pre class="option-li">D</pre><pre>{{ question.optionD }}</pre></div>
             </div>
 
-            <div class="analysis">
+            <div class="analysis" v-show="showAnswer">
                 <pre>正确答案: <a class="answer">{{ question.answer }}</a></pre>
                 <pre>解析: <br>{{ question.analysis }}</br></pre>
             </div>
 
             <div class="bottom-button">
                 <button><a :href="`/questions/${parseInt(question.id) - 1}`">上一题</a></button>
-                <button>确认</button>
+                <button @click="toggleAnswer">确认</button>
                 <button><a :href="`/questions/${parseInt(question.id) + 1}`">下一题</a></button>
             </div>
         </div>
