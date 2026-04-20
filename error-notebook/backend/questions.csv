@@ -25,3 +25,129 @@ console.log(typeof d);  // """"string""""（d 是全局变量）
 "
 2,javascript,下面表达式的结果是（）,single,void();,undefined,TypeError,null,SyntaxError,D,"void();  // SyntaxError: Unexpected token ')'
 //    解析器期望一个表达式，但遇到了空括号"
+FLUSH1,frontend,以下哪个选项不是动态加载DLL时需要做的事情？,single,,引入lib文件,引入带有库函数声明、定义的头文件,调用LoadLibrary或LoadLibraryEx,调用GetProcAddress,A,"同花顺前端笔试第一题
+DLL（动态链接库）是一个包含可执行函数和资源的模块，通常用于共享代码和资源。它的文件扩展名为 .dll，在Windows系统中被广泛使用。DLL文件不能独立运行，而是需要由其他应用程序调用。它的主要作用是通过动态链接机制，在程序运行时加载所需的函数或资源，从而提高代码复用性和程序效率。
+调用DLL主要有静态调用和动态调用两种方式。
+静态调用：将.lib文件和头文件添加到调用项目中，并在代码中使用 #pragma comment(lib, ""xxx.lib"") 链接DLL。
+动态调用：通过 LoadLibrary 加载DLL，并使用 GetProcAddress 获取函数地址。"
+FLUSH2,frontend,utf-8编码下，一个字符最多占几个字节？,single,,1个,2个,3个,4个,D,"同花顺前端笔试第二题
+UTF-8 编码下，一个字符占用 1 到 4 个字节。所有英文字符（A–Z、a–z、0–9、常用标点）在 UTF-8 中都是单字节存储，而中文等非 ASCII 字符通常占 3 字节，Emoji 等特殊符号可能占 4 字节。"
+FLUSH3,frontend,在公司局域网上ping www.10jqka.com.cn一定不涉及的网络协议是？,single,,UDP,DNS,ICMP,RAAP,D,"同花顺前端笔试第三题
+ping 命令使用 ICMP 协议发送回显请求和接收应答，同时需要 DNS 将域名解析为 IP 地址（通常使用 UDP 传输），而 RAAP 并非标准网络协议，因此一定不涉及。
+ICMP：互联网控制报文协议，用于网络诊断（如 ping、traceroute）和错误报告，ping 命令的核心协议。"
+FLUSH4,frontend,关于计算机网络，下列描述当中，正确的是,single,"A、在同一信道上同一时刻，可进行双向数据传送的通信方式是半双工
+B、TCP协议是无连接的；UDP协议是面向连接的
+C、假设一个主机的ip地址为192.168.8.123，而子网掩码为255.255.255.248，那么该主机的网络号是 192.168.8.120
+D、计算机网络中的OSI结构分别是：物理层，数据链路层，传输层，会话层，表示层，应用层",A,B,C,D,C,"同花顺前端笔试第四题
+
+A: 半双工允许双向通信但不能同时，全双工才是同时双向。所以A错误。
+B: TCP是面向连接的，UDP是无连接的。说反了，B错误。
+C: IP 192.168.8.123，子网掩码255.255.255.248，即/29，网络号是IP与掩码按位与。248二进制11111000，123二进制01111011，与后得01111000即120，所以网络号192.168.8.120，正确。
+D: OSI七层模型缺少了网络层，顺序也有问题。正确顺序：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层。所以D错误。
+
+因此正确答案是C。"
+FLUSH5,frontend,使Cache命中率最高的替换算法是,single,,FIFO,RAND,LRU,FILO,C,"同花顺前端笔试第五题
+
+在常见的程序访问局部性特征下，LRU（最近最少使用）算法能较好地保留近期频繁访问的数据，替换最久未使用的块，通常命中率高于FIFO（先进先出）、RAND（随机）和FILO（先进后出），因此是四种中命中率最高的替换算法。"
+FLUSH6,frontend,以下不是使用TCP的应用层协议是？,single,,HTTP,DHCP,SMTP,FTP,B,"同花顺前端笔试第六题
+
+HTTP、SMTP、FTP 均基于 TCP 协议，提供可靠传输；而 DHCP（动态主机配置协议）基于 UDP 协议，使用广播方式发送请求，因此不是使用 TCP 的应用层协议。"
+FLUSH7,frontend,在同一信道上同一时刻，可进行双向数据传送的通信方式是,single,,全双工,单工,半双工,上述三种均不是,A,"同花顺前端笔试第七题
+
+全双工通信方式允许数据在同一时刻进行双向传输；单工只能单向传输；半双工可以双向传输但不能同时进行。因此，符合“同一时刻双向传送”的是全双工。"
+FLUSH8,frontend,把background-size属性设为以下何值时，能在保持原图像的宽高比的前提下，缩放到能放进背景区的尺寸,single,,auto,contain,cover,100% 100%,B,"同花顺前端笔试第八题
+
+contain 会在保持图像原始宽高比的前提下，将图像缩放至完全适应背景区域（即整个图像都能显示出来，可能背景区有留白）；而 cover 会覆盖整个区域但可能裁剪； auto 显示原始尺寸；100% 100%会拉伸图像导致变形。因此，符合“保持宽高比且缩放到能放进背景区”的是 contain 。"
+FLUSH9,frontend,下列关系选择器例子中，用于匹配相邻选择器，即匹配兄弟元素的是,single,,#demo+div,#demo div,#demo>div,#demo~div,A,"同花顺前端笔试第九题
+
+#demo+div 是相邻兄弟选择器，匹配紧跟在 #demo 后面的同级 div 元素；#demo div 是后代选择器；#demo>div 是子选择器；#demo~div 是通用兄弟选择器（匹配之后所有同级 div）。题目要求“相邻选择器，即匹配兄弟元素”特指相邻兄弟，因此选 A。"
+FLUSH10,frontend,多线程和多进程的程序各有什么优缺点？分别用在什么场合？,shortanswer,,,,,,,"""多线程的优点：共享内存、通信高效、切换开销小；缺点是同步复杂、一个线程崩溃可能影响整个进程。适合I/O密集型或需要频繁数据共享的场合（如Web服务器）。
+多进程的优点：地址空间隔离，一个进程崩溃不影响其他进程，稳定性高；缺点是创建和切换开销大、进程间通信（IPC）较复杂。适合CPU密集型或对可靠性要求高的场合（如Chrome浏览器每个标签页独立进程）。"""
+FLUSH11,frontend,至少说出四种以上Linux的版本,shortanswer,,,,,,Ubuntu、Debian、CentOS、Red Hat Enterprise Linux (RHEL)、Kali Linux,"""Debian：以稳定和自由软件原则为核心，采用严格的软件包测试流程，是许多其他发行版的基础。
+Ubuntu：基于Debian，以易用性和桌面友好著称，拥有庞大的社区和丰富的软件支持，适合新手、桌面用户及服务器。
+Red Hat Enterprise Linux (RHEL)：商业企业级发行版，提供长期支持、认证和专业服务，广泛应用于关键业务环境。
+CentOS：曾是RHEL的免费克隆版，提供企业级稳定性，常用于服务器，但目前已转向CentOS Stream（滚动发布）。
+Kali Linux：基于Debian，专为渗透测试和安全审计设计，预装大量安全工具。"""
+FLUSH12,frontend,一网络的子网掩码为255.255.255.240问该网络能够连接多少个主机？,shortanswer,,,,,,14,255.255.255.240二进制为11111111.11111111.11111111.11110000，即前28位为网络位，后4位为主机位。因此可分配的 IP 地址数为 2^4 = 16，减去网络地址和广播地址，实际可用主机数为 14。
+FLUSH13,frontend,请用你擅长的语言，编写一个函数，实现字符串的大小写转换功能。,shortanswer,比如输入“welcome to myhexin”，输出“WELCOME TO MYHEXIN”,,,,,,"""// 1. 使用已有函数
+function swapCase(str, flag){
+    if(flag === true) return str.toUpperCase();
+    else return str.toLowerCase();
+}
+
+// 2. 手动实现
+function UpChar(str){
+    // 转换大写字母功能实现
+    let res = '';
+    for(let i=0;i<str.length;i++){
+        if('a'<=str[i] && str[i]<='z') res += String.fromCharCode(str.charCodeAt(i) - 32);
+        else res += str[i];
+    }
+    return res
+}
+
+function LowChar(str){
+    // 转换小写字母功能实现
+    let res = '';
+    for(let i=0;i<str.length;i++){
+        if('A'<=str[i] && str[i]<='Z') res += String.fromCharCode(str.charCodeAt(i) + 32);
+        else res += str[i];
+    }
+    return res
+}
+
+function swapCase(str, flag){
+    if(flag === true) return UpChar(str);
+    else return LowChar(str);
+}"""
+FLUSH14,frontend,请编写一个函数，输入某个人的生日后，可以计算出今年还有多少天过生日。,shortanswer,,,,,,,"/*
+    @param {string} birthDate - The birth date in YYYY-MM-DD format
+    @returns {number} The number of days until the next birthday
+*/
+function getDaysUntilBirthday(birthDate){
+    const now = new Date();
+    const birth = new Date(birthDate);
+  
+    const nowYear = now.getFullYear();
+    const birthMonth = birth.getMonth();      // 0-11
+    const birthDay = birth.getDate();         // 1-31
+
+    // 创建今年的生日日期（时间部分设为 00:00:00）
+    let nextBirthday = new Date(nowYear, birthMonth, birthDay);
+    nextBirthday.setHours(0, 0, 0, 0);
+
+    const today = new Date(now);
+    today.setHours(0, 0, 0, 0);
+
+    // 如果今年的生日已经过了，计算明年的生日
+    if (nextBirthday < today) {
+        nextBirthday = new Date(nowYear + 1, birthMonth, birthDay);
+        nextBirthday.setHours(0, 0, 0, 0);
+    }
+
+    // 计算天数差
+    const timeDiff = nextBirthday.getTime() - today.getTime();
+    const daysUntil = Math.round(timeDiff / (1000 * 60 * 60 * 24));
+
+    return daysUntil;
+}
+
+console.log(getDaysUntilBirthday('1990-05-01'));  // 今年生日还没到：正数
+console.log(getDaysUntilBirthday('1990-01-01'));  // 今年生日已过：计算明年
+console.log(getDaysUntilBirthday('1990-04-20'));  // 今天生日：0
+console.log(getDaysUntilBirthday('2000-02-29'));  // 闰年生日：测试边界"
+FLUSH15,frontend,表达式B*（A-C)/（D+E-F）的后缀表达式是,shortanswer,,,,,,BAC-DE+F-/,根据运算符优先级和括号，先计算括号内的减法 A-C 得 AC-，然后乘以 B 得 BAC-，再计算分母部分 D+E-F，其中加法和减法同级从左到右，先 D+E 得 DE+，再减 F 得 DE+F-，最后做除法，因此后缀表达式为 BAC-*DE+F-/。
+FLUSH16,frontend,很多IM有消息已读标志，请简述下发一个消息到界面展示已读，数据在客户端和网络上的流程。,shortanswer,,,,,,核心流程：[发送方A] → [IM服务器] → [接收方B] → [B点击阅读] → [服务器] → [A界面更新],"发送方客户端生成消息并分配唯一ID，通过TCP长连接将消息数据包（含ID、内容、会话信息等）发送到IM服务器；服务器接收后存储消息，并立即向发送方返回“已送达”确认，同时将消息推送给接收方客户端（若在线）或暂存等待拉取。
+接收方客户端收到消息后展示在聊天界面，当用户打开该会话或主动阅读消息时（例如进入聊天窗口、消息滚动到可视区域），客户端自动构造“已读回执”数据包（包含消息ID和会话ID），通过TCP连接发送给服务器；服务器更新消息状态为“已读”，并将该回执转发给发送方客户端。
+发送方客户端收到已读回执后，更新本地界面中对应消息的标识（例如从“已送达”改为“已读”）。整个过程基于TCP协议保证可靠传输，数据格式常采用JSON或Protobuf，服务器作为中转中心完成消息存储、推送及状态同步。"
+FLUSH17,frontend,请例举常见的序列化协议，并简要描述优缺点。,shortanswer,,,,,,,"序列化协议是指将内存中的数据结构、对象或状态转换为一种可存储或可网络传输的格式（如字节序列、字符串等）的约定与规则，并能够通过反序列化将这种格式还原为原始的数据结构。其核心目的是解决跨进程、跨网络、跨语言的数据交换问题。
+常见序列化协议及优缺点：
+JSON：优点是可读性强、跨语言、使用广泛；缺点是数据体积较大、解析性能一般、不支持二进制数据。
+XML：优点是结构清晰、支持复杂元数据；缺点是冗余度高、解析慢、体积大。
+Protocol Buffers (Protobuf)：优点是二进制格式、体积小、序列化/反序列化速度快、支持跨语言和多版本兼容；缺点是可读性差、需要预先定义.proto文件。
+Thrift：优点是支持多种序列化格式（二进制、压缩等）和多种传输协议，性能高；缺点是学习成本较高，配置复杂。
+MessagePack：优点是二进制紧凑、比JSON更小更快、保留JSON语义；缺点是可读性差、工具链相对少。
+Avro：优点是依赖动态schema、适合大数据场景（如Hadoop），支持模式演化；缺点是可读性差、需要Schema注册。"
+FLUSH18,frontend,完全二叉树最适合用什么方法存储，为什么？,shortanswer,,,,,,顺序存储（数组）,完全二叉树的节点编号与数组下标一一对应（根节点为1或0，左子节点为2i，右子节点为2i+1），可以紧凑地存储而无需指针，能充分利用数组空间且无存储碎片，同时支持随机访问父节点和子节点，存储效率高。
+FLUSH19,frontend,给定两个字符串，确定其中一个字符串重新排列后是否可以包含另外一个字符串？,shortanswer,"例如
+给出字符串：ac 以及 abc，对字符串abc重新排列生成acb包含字符串ac，返回true",,,,,,
