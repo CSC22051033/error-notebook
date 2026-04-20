@@ -23,6 +23,14 @@ function toggleAnswer() {
     showAnswer.value = !showAnswer.value
 }
 
+function changeId(id, delta = 1) {
+    const match = String(id).match(/^([a-zA-Z]*)(\d+)$/);   // 匹配前缀和数字部分
+    if (!match) return id;
+    const [, prefix, num] = match;
+    const newNum = parseInt(num) + delta;
+    return prefix + newNum;
+}
+
 async function fetchDetail() {
     loading.value = true;
     const id = route.params.id
@@ -33,7 +41,7 @@ async function fetchDetail() {
         
         if (result.success) {
             // 根据序号查找题目            
-            question.value = result.data.find(q => q.id == parseInt(id))
+            question.value = result.data.find(q => q.id == id)
             console.log(question.value);
             
             if (!question.value) {
@@ -64,7 +72,7 @@ onMounted(() => {
                 <label>{{ question.knowledgeType }}</label>
                 <h2>{{ question.id }}. {{ question.questionStem }}</h2>
             </div>
-            <pre>{{ question.questionContent }}</pre>
+            <pre class="question-content">{{ question.questionContent }}</pre>
             <div v-if="question.questionType === 'single' || question.questionType === 'multiple'">
                 <div class="option"><pre class="option-li">A</pre><pre>{{ question.optionA }}</pre></div>
                 <div class="option"><pre class="option-li">B</pre><pre>{{ question.optionB }}</pre></div>
@@ -73,14 +81,14 @@ onMounted(() => {
             </div>
 
             <div class="analysis" v-show="showAnswer">
-                <pre>正确答案: <a class="answer">{{ question.answer }}</a></pre>
-                <pre>解析: <br>{{ question.analysis }}</br></pre>
+                <pre v-if="question.answer"><b>正确答案:</b> <a class="answer">{{ question.answer }}</a></pre>
+                <pre v-if="question.analysis"><b>解析:</b> <br>{{ question.analysis }}</br></pre>
             </div>
 
             <div class="bottom-button">
-                <button><a :href="`/questions/${parseInt(question.id) - 1}`">上一题</a></button>
+                <button><a :href="`/questions/${changeId(question.id, -1)}`">上一题</a></button>
                 <button @click="toggleAnswer">确认</button>
-                <button><a :href="`/questions/${parseInt(question.id) + 1}`">下一题</a></button>
+                <button><a :href="`/questions/${changeId(question.id, 1)}`">下一题</a></button>
             </div>
         </div>
     </div>
@@ -129,6 +137,20 @@ label {
 
 .analysis{
     background-color: rgba(248, 248, 248, 1);
+}
+
+.analysis pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
+
+.question-content{
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .answer{

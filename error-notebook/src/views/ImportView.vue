@@ -24,7 +24,6 @@
 
     async function handleSubmit(){
         if (!form.value.questionStem.trim()) return alert('请输入题干')
-        if (!form.value.answer.trim()) return alert('请输入正确答案')
         
         const submitData = { ...form.value }
 
