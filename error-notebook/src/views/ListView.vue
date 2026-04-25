@@ -1,9 +1,20 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
-const questions = ref([])
+// 定义响应式数据
 const loading = ref(false)
 const error = ref('')
+const questions = ref([])
+const currentPage = ref(1)
+const pageSize = 10
+
+// 计算分页数据
+const totalPages = computed(() => Math.ceil(questions.value.length / pageSize))
+const paginatedQuestions = computed(() => {
+    const start = (currentPage.value - 1) * pageSize
+    const end = start + pageSize
+    return questions.value.slice(start, end)
+})
 
 // 获取题目列表
 async function fetchQuestions() {
@@ -16,6 +27,7 @@ async function fetchQuestions() {
         
         if (result.success) {
             questions.value = result.data
+            currentPage.value = 1 // 刷新时重置到第一页
         } else {
             error.value = result.error || '获取失败'
         }
@@ -23,6 +35,20 @@ async function fetchQuestions() {
         error.value = '网络错误：' + err.message
     } finally {
         loading.value = false
+    }
+}
+
+// 上一页
+function prevPage() {
+    if (currentPage.value > 1) {
+        currentPage.value--
+    }
+}
+
+// 下一页
+function nextPage() {
+    if (currentPage.value < totalPages.value) {
+        currentPage.value++
     }
 }
 
@@ -59,7 +85,7 @@ onMounted(() => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="q in questions" :key="q.id">
+                <tr v-for="q in paginatedQuestions" :key="q.id">
                     <td><a :href="`/questions/${q.id}`">{{ q.id }}</a></td>
                     <td>{{ q.knowledgeType }}</td>
                     <td>{{ getTypeText(q.questionType) }}</td>
@@ -72,13 +98,18 @@ onMounted(() => {
             暂无题目数据
         </div>
         
-        <button @click="fetchQuestions" class="refresh-btn">刷新</button>
+        <div class="pageDiv">
+            <button @click="prevPage" :disabled="currentPage <= 1" class="page-btn">上一页</button>
+            <span class="page-info">第 {{ currentPage }} / {{ totalPages }} 页</span>
+            <button @click="nextPage" :disabled="currentPage >= totalPages" class="page-btn">下一页</button>
+        </div>
+        <!-- <button @click="fetchQuestions" class="refresh-btn">刷新</button> -->
     </div>
 </template>
 
 <style scoped>
 .container {
-    max-width: 1200px;
+    max-width: 1000px;
     min-height: 600px;
     margin: 0 auto;
     padding: 20px;
@@ -154,5 +185,32 @@ tr:hover {
 
 .refresh-btn:hover {
     background: #45a049;
+}
+
+.pageDiv{
+    display: flex;
+    justify-content: space-between;
+}
+
+.page-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: #1976D2;
+}
+
+.page-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.page-info {
+    margin: 0 10px;
+    font-weight: bold;
 }
 </style>
