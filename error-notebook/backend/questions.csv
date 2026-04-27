@@ -1,30 +1,33 @@
-"ID",知识类型,题干,题目类型,题目内容,选项A,选项B,选项C,选项D,正确答案,解析
+﻿ID,知识类型,题干,题目类型,题目内容,选项A,选项B,选项C,选项D,正确答案,解析
 1,javascript,执行以下程序，输出结果为（）,single,"function a(){
   var a = 1,b = 2;
   var c = d = '1';
 }
 a();
 console.log(typeof b);
-console.log(typeof d);
-",undefined undefined,undefined string,number undefined,抛出异常,B,"代码等价于
+console.log(typeof d);",undefined undefined,undefined string,number undefined,抛出异常,B,"代码等价于
 function a(){
   // 变量提升后的等价代码：
   var a;           // 声明提升到函数顶部
   var b;           // 声明提升到函数顶部  
   var c;           // 声明提升到函数顶部
-  
   a = 1;
   b = 2;
   d = '1';         // 隐式全局变量（没有提升，执行到这里才创建）
   c = d;
 }
-
 a();
 console.log(typeof b);  // """"undefined""""（b 是局部变量，外部访问不到）
-console.log(typeof d);  // """"string""""（d 是全局变量）
-"
+console.log(typeof d);  // """"string""""（d 是全局变量）"
 2,javascript,下面表达式的结果是（）,single,void();,undefined,TypeError,null,SyntaxError,D,"void();  // SyntaxError: Unexpected token ')'
 //    解析器期望一个表达式，但遇到了空括号"
+3,javascript,以下代码的输出是什么？,single,"const map = new Map();
+const objKey1 = { id: 1 };
+const objKey2 = { id: 1 };
+map.set(objKey1, 'value1');
+map.set(objKey2, 'value2');
+console.log(map.size);
+console.log(map.get({ id: 1 }));",1 value2,2 undefined,1 value1,2 value1,B,对于对象，比较的是引用而非值。objKey1和objKey2虽然结构相同但是不同的引用，所以Map中有两个条目（size为2）。map.get({id:1})创建了一个新对象，其引用与objKey1和objKey2都不同，所以返回undefined。
 FLUSH1,frontend,以下哪个选项不是动态加载DLL时需要做的事情？,single,,引入lib文件,引入带有库函数声明、定义的头文件,调用LoadLibrary或LoadLibraryEx,调用GetProcAddress,A,"同花顺前端笔试第一题
 DLL（动态链接库）是一个包含可执行函数和资源的模块，通常用于共享代码和资源。它的文件扩展名为 .dll，在Windows系统中被广泛使用。DLL文件不能独立运行，而是需要由其他应用程序调用。它的主要作用是通过动态链接机制，在程序运行时加载所需的函数或资源，从而提高代码复用性和程序效率。
 调用DLL主要有静态调用和动态调用两种方式。
@@ -39,27 +42,20 @@ FLUSH4,frontend,关于计算机网络，下列描述当中，正确的是,single
 B、TCP协议是无连接的；UDP协议是面向连接的
 C、假设一个主机的ip地址为192.168.8.123，而子网掩码为255.255.255.248，那么该主机的网络号是 192.168.8.120
 D、计算机网络中的OSI结构分别是：物理层，数据链路层，传输层，会话层，表示层，应用层",A,B,C,D,C,"同花顺前端笔试第四题
-
 A: 半双工允许双向通信但不能同时，全双工才是同时双向。所以A错误。
 B: TCP是面向连接的，UDP是无连接的。说反了，B错误。
 C: IP 192.168.8.123，子网掩码255.255.255.248，即/29，网络号是IP与掩码按位与。248二进制11111000，123二进制01111011，与后得01111000即120，所以网络号192.168.8.120，正确。
 D: OSI七层模型缺少了网络层，顺序也有问题。正确顺序：物理层、数据链路层、网络层、传输层、会话层、表示层、应用层。所以D错误。
-
 因此正确答案是C。"
 FLUSH5,frontend,使Cache命中率最高的替换算法是,single,,FIFO,RAND,LRU,FILO,C,"同花顺前端笔试第五题
-
 在常见的程序访问局部性特征下，LRU（最近最少使用）算法能较好地保留近期频繁访问的数据，替换最久未使用的块，通常命中率高于FIFO（先进先出）、RAND（随机）和FILO（先进后出），因此是四种中命中率最高的替换算法。"
 FLUSH6,frontend,以下不是使用TCP的应用层协议是？,single,,HTTP,DHCP,SMTP,FTP,B,"同花顺前端笔试第六题
-
 HTTP、SMTP、FTP 均基于 TCP 协议，提供可靠传输；而 DHCP（动态主机配置协议）基于 UDP 协议，使用广播方式发送请求，因此不是使用 TCP 的应用层协议。"
 FLUSH7,frontend,在同一信道上同一时刻，可进行双向数据传送的通信方式是,single,,全双工,单工,半双工,上述三种均不是,A,"同花顺前端笔试第七题
-
 全双工通信方式允许数据在同一时刻进行双向传输；单工只能单向传输；半双工可以双向传输但不能同时进行。因此，符合“同一时刻双向传送”的是全双工。"
 FLUSH8,frontend,把background-size属性设为以下何值时，能在保持原图像的宽高比的前提下，缩放到能放进背景区的尺寸,single,,auto,contain,cover,100% 100%,B,"同花顺前端笔试第八题
-
 contain 会在保持图像原始宽高比的前提下，将图像缩放至完全适应背景区域（即整个图像都能显示出来，可能背景区有留白）；而 cover 会覆盖整个区域但可能裁剪； auto 显示原始尺寸；100% 100%会拉伸图像导致变形。因此，符合“保持宽高比且缩放到能放进背景区”的是 contain 。"
 FLUSH9,frontend,下列关系选择器例子中，用于匹配相邻选择器，即匹配兄弟元素的是,single,,#demo+div,#demo div,#demo>div,#demo~div,A,"同花顺前端笔试第九题
-
 #demo+div 是相邻兄弟选择器，匹配紧跟在 #demo 后面的同级 div 元素；#demo div 是后代选择器；#demo>div 是子选择器；#demo~div 是通用兄弟选择器（匹配之后所有同级 div）。题目要求“相邻选择器，即匹配兄弟元素”特指相邻兄弟，因此选 A。"
 FLUSH10,frontend,多线程和多进程的程序各有什么优缺点？分别用在什么场合？,shortanswer,,,,,,,"""多线程的优点：共享内存、通信高效、切换开销小；缺点是同步复杂、一个线程崩溃可能影响整个进程。适合I/O密集型或需要频繁数据共享的场合（如Web服务器）。
 多进程的优点：地址空间隔离，一个进程崩溃不影响其他进程，稳定性高；缺点是创建和切换开销大、进程间通信（IPC）较复杂。适合CPU密集型或对可靠性要求高的场合（如Chrome浏览器每个标签页独立进程）。"""
@@ -74,7 +70,6 @@ function swapCase(str, flag){
     if(flag === true) return str.toUpperCase();
     else return str.toLowerCase();
 }
-
 // 2. 手动实现
 function UpChar(str){
     // 转换大写字母功能实现
@@ -85,7 +80,6 @@ function UpChar(str){
     }
     return res
 }
-
 function LowChar(str){
     // 转换小写字母功能实现
     let res = '';
@@ -95,7 +89,6 @@ function LowChar(str){
     }
     return res
 }
-
 function swapCase(str, flag){
     if(flag === true) return UpChar(str);
     else return LowChar(str);
@@ -107,31 +100,24 @@ FLUSH14,frontend,请编写一个函数，输入某个人的生日后，可以计
 function getDaysUntilBirthday(birthDate){
     const now = new Date();
     const birth = new Date(birthDate);
-  
     const nowYear = now.getFullYear();
     const birthMonth = birth.getMonth();      // 0-11
     const birthDay = birth.getDate();         // 1-31
-
     // 创建今年的生日日期（时间部分设为 00:00:00）
     let nextBirthday = new Date(nowYear, birthMonth, birthDay);
     nextBirthday.setHours(0, 0, 0, 0);
-
     const today = new Date(now);
     today.setHours(0, 0, 0, 0);
-
     // 如果今年的生日已经过了，计算明年的生日
     if (nextBirthday < today) {
         nextBirthday = new Date(nowYear + 1, birthMonth, birthDay);
         nextBirthday.setHours(0, 0, 0, 0);
     }
-
     // 计算天数差
     const timeDiff = nextBirthday.getTime() - today.getTime();
     const daysUntil = Math.round(timeDiff / (1000 * 60 * 60 * 24));
-
     return daysUntil;
 }
-
 console.log(getDaysUntilBirthday('1990-05-01'));  // 今年生日还没到：正数
 console.log(getDaysUntilBirthday('1990-01-01'));  // 今年生日已过：计算明年
 console.log(getDaysUntilBirthday('1990-04-20'));  // 今天生日：0
@@ -175,10 +161,9 @@ FLUSH21,frontend,输出1到999中所有不包含5的整数。编程用c/c++/pyth
             return False
         n //= 10
     return True
-
 for i in range(1,1000):
     if hasNoFive(i):
-        print(i) "
+        print(i)"
 FLUSH22,frontend,有一个非空的乱序数组，其中有若干个0。请将所有的0，移动到数组末尾。编程用c++/python/java其中的一种实现,shortanswer,,,,,,,"class Solution(object):
     def moveZeroes(self, nums):
         """"""
@@ -201,14 +186,11 @@ CSS:
 	.box p{background:#005}",,,,,#004,"第1梯队：
   ├─ #box p     → 0,1,0,1
   └─ div #tag   → 0,1,0,1  ← 同权重，后声明覆盖前者
-  
 第2梯队：
   └─ #tag       → 0,1,0,0  ← 少一个元素选择器
-  
 第3梯队：
   ├─ .box .tag  → 0,0,2,0
   └─ .box p     → 0,0,1,1
-  
 第4梯队：
   └─ p          → 0,0,0,1"
 FLUSH24,frontend,创建一个节点，插入到页面中。设置其背景为红色，宽100px，高100px，样式名称demo，绑定点击事件，点击后该节点隐藏,shortanswer,,,,,,,"// 创建节点
@@ -255,7 +237,7 @@ FLUSH28,frontend,请将以下字符串中的div加粗,shortanswer,"`<div id=""co
 }
 const contentDiv = document.getElementById('content');
 contentDiv.innerHTML = boldDivOutsideTags(contentDiv.innerHTML);"
-FLUSH29,frontend,以下代码是否有问题，如果有请说明理由并进行改进 ,shortanswer,"<ul>
+FLUSH29,frontend,以下代码是否有问题，如果有请说明理由并进行改进,shortanswer,"<ul>
 	<li>text1</li> 
 	<li>text2</li>
 </ul>
@@ -277,7 +259,7 @@ lis.forEach(function(li) {
         console.log(e.target.innerText);  // 事件目标
     });
 });"
-FLUSH30,frontend,不少于3种方式实现多维数组实现降维（扁平化）,shortanswer,"如[[1, 2], [3, [4, [5, 6]]]] ->[1, 2, 3, 4, 5, 6]",,,,,,"1. 使用原生 Array.prototype.flat(Infinity)
+FLUSH30,frontend,不少于3种方式实现多维数组实现降维（扁平化）,shortanswer,"如[[1, 2], [3, [4, [5, 6]]]] ->[1, 2, 3, 4, 5, 6]",,,,,,"""""""1. 使用原生 Array.prototype.flat(Infinity)
 const arr = [[1, 2], [3, [4, [5, 6]]]];
 const flatArr = arr.flat(Infinity);
 console.log(flatArr); // [1, 2, 3, 4, 5, 6]
@@ -299,4 +281,4 @@ function flatten(arr) {
     });
     return result;
 }
-console.log(flatten(arr));"
+console.log(flatten(arr));"""""""

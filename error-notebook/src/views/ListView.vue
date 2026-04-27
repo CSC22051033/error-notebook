@@ -8,6 +8,14 @@ const questions = ref([])
 const currentPage = ref(1)
 const pageSize = 10
 
+// 解析ID的辅助函数
+function parseId(id) {
+    const match = id.match(/^(\D*)(\d*)$/)
+    const strPart = match[1] || ''
+    const numPart = match[2] ? parseInt(match[2], 10) : 0
+    return { strPart, numPart }
+}
+
 // 计算分页数据
 const totalPages = computed(() => Math.ceil(questions.value.length / pageSize))
 const paginatedQuestions = computed(() => {
@@ -26,7 +34,38 @@ async function fetchQuestions() {
         const result = await res.json()
         
         if (result.success) {
-            questions.value = result.data
+            let data = result.data
+            // 按ID排序：纯数字在前，字符串+数字按字符串再按数字排序
+            data.sort((a, b) => {
+                const aParsed = parseId(a.id)
+                const bParsed = parseId(b.id)
+                if (aParsed.strPart === '' && bParsed.strPart === '') {
+                    return aParsed.numPart - bParsed.numPart
+                } else if (aParsed.strPart === '') {
+                    return -1
+                } else if (bParsed.strPart === '') {
+                    return 1
+                } else {
+                    if (aParsed.strPart !== bParsed.strPart) {
+                        return aParsed.strPart.localeCompare(bParsed.strPart)
+                    } else {
+                        return aParsed.numPart - bParsed.numPart
+                    }
+                }
+            })
+            // 更新CSV文件
+            const updateRes = await fetch('http://localhost:3000/api/questions/update-all', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            const updateResult = await updateRes.json()
+            if (!updateResult.success) {
+                error.value = '更新CSV失败：' + updateResult.error
+                return
+            }
+            // 设置排序后的数据
+            questions.value = data
             currentPage.value = 1 // 刷新时重置到第一页
         } else {
             error.value = result.error || '获取失败'
@@ -71,7 +110,8 @@ onMounted(() => {
 <template>
     <div class="container">
         <h2>题目列表</h2>
-        
+        <!--<button @click="fetchQuestions" class="refresh-btn">刷新</button>-->
+
         <div v-if="loading" class="loading">加载中...</div>
         <div v-if="error" class="error">{{ error }}</div>
         
@@ -103,7 +143,7 @@ onMounted(() => {
             <span class="page-info">第 {{ currentPage }} / {{ totalPages }} 页</span>
             <button @click="nextPage" :disabled="currentPage >= totalPages" class="page-btn">下一页</button>
         </div>
-        <!-- <button @click="fetchQuestions" class="refresh-btn">刷新</button> -->
+        
     </div>
 </template>
 

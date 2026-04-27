@@ -215,6 +215,38 @@ app.get('/api/questions/list', (req, res) => {
     }
 });
 
+// 更新所有题目数据（重写CSV）
+app.post('/api/questions/update-all', (req, res) => {
+    try {
+        const data = req.body;
+        const BOM = '\uFEFF';
+        const headers = ['ID', '知识类型', '题干', '题目类型', '题目内容', '选项A', '选项B', '选项C', '选项D', '正确答案', '解析'];
+        let csvContent = BOM + headers.join(',') + '\n';
+        
+        for (const item of data) {
+            const row = [
+                item.id,
+                item.knowledgeType,
+                item.questionStem,
+                item.questionType,
+                item.questionContent,
+                item.optionA,
+                item.optionB,
+                item.optionC,
+                item.optionD,
+                item.answer,
+                item.analysis
+            ];
+            csvContent += row.map(escapeCSV).join(',') + '\n';
+        }
+        
+        fs.writeFileSync(CSV_FILE, csvContent, 'utf8');
+        res.json({ success: true, message: 'CSV已更新' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 app.listen(3000, () => {
     console.log('Server running on http://localhost:3000');
 });
