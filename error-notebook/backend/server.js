@@ -247,6 +247,21 @@ app.post('/api/questions/update-all', (req, res) => {
     }
 });
 
+// 静态文件服务：提供PDF文件访问
+app.use('/pdfs', express.static(path.join(__dirname, 'pdfs')));
+
+// 获取PDF文件列表
+app.get('/api/pdfs', (req, res) => {
+    const pdfDir = path.join(__dirname, 'pdfs');
+    fs.readdir(pdfDir, (err, files) => {
+        if (err) {
+            return res.status(500).json({ error: '无法读取PDF文件夹' });
+        }
+        const pdfs = files.filter(file => file.endsWith('.pdf'));
+        res.json({ pdfs });
+    });
+});
+
 app.listen(3000, () => {
     console.log('Server running on http://localhost:3000');
 });

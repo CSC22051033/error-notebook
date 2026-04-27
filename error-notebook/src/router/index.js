@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ImportView from '../views/ImportView.vue'
 import ListView from '../views/ListView.vue'
+import PastListView from '../views/PastListView.vue'
 import QuestionView from '../views/QuestionView.vue'
 
 const routes = [
@@ -16,6 +17,11 @@ const routes = [
     path: '/list',
     name: 'List',
     component: ListView
+  },
+  {
+    path: '/past-list',
+    name: 'PastList',
+    component: PastListView
   },
   {
     path: '/questions/:id',
