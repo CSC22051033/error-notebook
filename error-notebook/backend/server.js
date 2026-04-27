@@ -262,6 +262,21 @@ app.get('/api/pdfs', (req, res) => {
     });
 });
 
+// 静态文件服务：提供知识点PDF文件访问
+app.use('/know-pdfs', express.static(path.join(__dirname, 'know-pdfs')));
+
+// 获取知识点PDF文件列表
+app.get('/api/know-pdfs', (req, res) => {
+    const pdfDir = path.join(__dirname, 'know-pdfs');
+    fs.readdir(pdfDir, (err, files) => {
+        if (err) {
+            return res.status(500).json({ error: '无法读取知识点PDF文件夹' });
+        }
+        const pdfs = files.filter(file => file.endsWith('.pdf'));
+        res.json({ pdfs });
+    });
+});
+
 app.listen(3000, () => {
     console.log('Server running on http://localhost:3000');
 });

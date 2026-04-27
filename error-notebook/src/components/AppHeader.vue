@@ -12,6 +12,7 @@
         <div class="dropdown-content">
           <a href="/list">题库</a>
           <a href="/past-list">真题</a>
+          <a href="/know-list">知识点</a>
         </div>
       </div>
       
