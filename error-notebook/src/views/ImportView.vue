@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, computed } from 'vue'
+    import { ref, nextTick, onMounted } from 'vue'
     import { useRouter } from 'vue-router'
     const router = useRouter()
 
@@ -12,6 +12,27 @@
         answer: '',
         analysis: ''
     })
+
+    // 模板引用
+    const analysisRef = ref(null)
+    const answerRef = ref(null)
+    const questionContentRef = ref(null)
+
+    // 自适应高度函数
+    const autoResize = (el) => {
+        if (!el) return
+        el.style.height = 'auto'           // 先重置，否则删除内容时高度不会减小
+        el.style.height = el.scrollHeight + 'px'
+    }
+
+    // 统一处理 input 事件
+    const handleInput = (field) => {
+        nextTick(() => {
+            if (field === 'analysis') autoResize(analysisRef.value)
+            if (field === 'answer') autoResize(answerRef.value)
+            if (field === 'questionContent') autoResize(questionContentRef.value)
+        })
+    }
 
     function handleSelectChange(){
         let questionType = document.getElementById("questionType").value;
@@ -41,6 +62,15 @@
 
         router.push('/')
     }
+
+    // 初始化时调整高度（如果有默认值）
+    onMounted(() => {
+        nextTick(() => {
+            autoResize(analysisRef.value)
+            autoResize(answerRef.value)
+            autoResize(questionContentRef.value)
+        })
+    })
 </script>
 
 <template>
@@ -72,7 +102,13 @@
         </div>
         <div class="questionContent">
             <label>题目内容</label>
-            <textarea v-model="form.questionContent" placeholder="请输入题目内容"></textarea>
+            <textarea 
+                v-model="form.questionContent" 
+                placeholder="请输入题目内容"
+                ref="questionContentRef"
+                @input="handleInput('questionContent')"
+                style="overflow: hidden; resize: none;"
+            ></textarea>
         </div>
         <div class="options">
             <div>
@@ -94,11 +130,23 @@
         </div>
         <div class="answer">
             <label>正确答案</label>
-            <textarea v-model="form.answer" placeholder="请输入正确答案"></textarea>
+            <textarea 
+                v-model="form.answer" 
+                placeholder="请输入正确答案"
+                ref="answerRef"
+                @input="handleInput('answer')"
+                style="overflow: hidden; resize: none;"
+            ></textarea>
         </div>
         <div class="analysis">
             <label>解析</label>
-            <textarea v-model="form.analysis" placeholder="请输入解析"></textarea>
+            <textarea 
+                v-model="form.analysis" 
+                placeholder="请输入解析"
+                ref="analysisRef"
+                @input="handleInput('analysis')"
+                style="overflow: hidden; resize: none;"
+            ></textarea>
         </div>
         <div class="button">
             <button type="submit">提交</button>
@@ -109,8 +157,8 @@
 <style scoped>
 form {
     max-width: 1000px;
-    margin: 0 auto;        /* 水平居中 */
-    padding: 20px;         /* 内边距 */
+    margin: 0 auto;
+    padding: 20px;
     background-color: #fff;
 }
 form div{
@@ -123,14 +171,17 @@ form div label{
 form div input, form div select, form div textarea{
     min-width: 350px;
     width: 100%;  
-    height: 30px;
     font-size: 1.5rem;
+    box-sizing: border-box;
 }
-.questionContent textarea{
-    height: 100px;
-}
-.answer textarea, .analysis textarea{
-    height: 50px;
+
+.questionContent textarea,
+.answer textarea,
+.analysis textarea {
+    min-height: 60px;
+    height: auto;
+    overflow: hidden;
+    resize: none;
 }
 .button{
     text-align: center;
