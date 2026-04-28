@@ -28,6 +28,118 @@ map.set(objKey1, 'value1');
 map.set(objKey2, 'value2');
 console.log(map.size);
 console.log(map.get({ id: 1 }));",1 value2,2 undefined,1 value1,2 value1,B,对于对象，比较的是引用而非值。objKey1和objKey2虽然结构相同但是不同的引用，所以Map中有两个条目（size为2）。map.get({id:1})创建了一个新对象，其引用与objKey1和objKey2都不同，所以返回undefined。
+4,javascript,控制台输出顺序正确的是（）,single,"setTimeout(function () {
+    console.log(1);
+}, 0);
+new Promise(function executor(resolve) {
+    console.log(2);
+    for (var i = 0; i < 10000; i++) {
+        i == 9999 && resolve();
+     }
+    console.log(3); 
+}).then(function () {
+    console.log(4); 
+});
+console.log(5);",25341,23541,52341,51234,B,"先执行同步代码：Promise构造函数内的console.log(2)、循环后的console.log(3)，以及最后的console.log(5)。
+然后执行微任务：Promise的then回调console.log(4)。
+最后执行宏任务：setTimeout的回调console.log(1)。"
+5,javascript,以下代码的输出是什么？,single,"let i;
+for (i = 0; i < 3; i++) {
+    setTimeout(() => console.log(i), 0);
+}
+for (let j = 0; j < 3; j++) {
+    setTimeout(() => console.log(j), 0);
+}",0 1 2 0 1 2,3 3 3 0 1 2,0 1 2 3 3 3,3 3 3 3 3 3,B,第一个循环使用let i声明在循环外，所有回调共享同一个i变量。循环结束后i为3，三个回调都输出3。第二个循环使用let j在循环头部声明，每次迭代创建新的j变量作用域，回调各自捕获不同的j值（0、1、2）。最终输出3 3 3 0 1 2。
+6,javascript,执行如下代码说法正确的有（）,multiple,"// 代码片段
+var a = 10;
+let b = 20;
+function testVar() {
+  console.log(a); // (A)
+  var a = 30;
+  console.log(a); // (B)
+}
+function testLet() {
+  console.log(b); // (C)
+  let b = 40;
+  console.log(b); // (D)
+}
+testVar();
+testLet();",注释是（A）处，打印undefined,注释是（B）处，打印30,注释是（C）处，报错 Cannot access 'b' before initialization,注释是（D）处，打印40,ABC,"这个题目很好地体现了var和let在变量提升和暂时性死区方面的重要区别：
+- var声明的变量存在提升,未赋值时为undefined
+- let声明的变量不会提升,在声明前访问会报错
+- 暂时性死区使得let变量在声明前不能被访问
+C选项正确:
+  在testLet()函数中,由于let不存在变量提升,且存在暂时性死区(Temporal Dead Zone),在变量声明前访问变量会抛出ReferenceError。
+D选项错误:
+  由于C处已经抛出错误,代码执行会终止,不会继续执行到D处。"
+7,javascript,执行以下程序，输出结果为（）,single,"function Foo() {
+    var i = 0;
+    return function() {
+        console.log(i++);
+    }
+}
+var f1 = Foo();
+var f2 = Foo();
+f1();
+f1();
+f2();",0 1 0,0 1 2,0 0 0,0 0 2,A,"这道题目考察了JavaScript中的闭包(Closure)和作用域概念。
+函数Foo()每次被调用时会创建一个新的作用域,其中包含一个局部变量i。返回的匿名函数形成了一个闭包,可以访问这个作用域中的变量i。
+代码执行过程:
+1. var f1 = Foo() 创建第一个闭包,其中i初始值为0
+2. var f2 = Foo() 创建第二个闭包,其中i初始值也为0
+3. f1()执行时,输出第一个闭包中的i(0),然后i++变为1
+4. f1()再次执行时,输出当前i值(1),然后i++变为2
+5. f2()执行时,输出第二个闭包中的i(0),因为f2引用的是另一个独立的作用域"
+8,javascript,执行以下程序，下列选项中，说法错误的是（）,single,"function fn(value){
+    console.log(arguments instanceof Array); ...①
+    console.log(arguments.length);...②
+    console.log(value);...③
+    var arr = [...arguments];...④
+}
+fn(1,2,3);",①式的输出结果为false,②式输出结果为2,③式的输出结果为1,④式可以利用arguments对象新生成一个数组,B,"关键知识点：
+1. arguments对象是所有函数中都可以访问的类数组对象
+2. arguments.length反映实际传入的参数个数
+3. 函数的形参会按顺序接收实际传入的参数
+4. 展开运算符可以将类数组对象转换为数组
+A选项正确：
+arguments是一个类数组对象，而不是真正的数组，所以arguments instanceof Array的结果确实是false。
+B选项错误：
+arguments.length反映的是函数调用时实际传入的参数个数。这里传入了1,2,3三个参数，所以length为3而不是2。
+C选项正确：
+value接收的是第一个参数的值，因此输出1是正确的。在函数参数中，value对应第一个传入的参数。
+D选项正确：
+展开运算符(...)可以将类数组对象转换为真正的数组，这里[...arguments]确实可以将arguments转换为包含所有参数的新数组[1,2,3]。"
+9,javascript,请问以下 JS 代码最终输出的结果是（）,single,"function func(a, b) {
+  ((c) => {
+    console.log(arguments[0]);
+    ((d) => {
+      console.log(arguments[0]);
+    })(4)
+  })(3);
+};
+func(1, 2);",3、4,1、3,1、1,3、3,C,箭头函数本身没有 arguments 对象，或者说箭头函数中 arguments 对象的值是由外围最近一层非箭头函数决定的，因此第一个箭头函数的 arguments 对象就是由函数 func 决定，输出第一个参数1，同理第二个箭头函数的 arguments 对象也是由函数 func 决定，输出第一个参数1。所以代码最终输出的结果是1、1，选项 C 正确。
+10,javascript,以下代码的输出是什么？,single,"let a = { n: 1 };
+let b = a;
+a.x = a = { n: 2 };
+console.log(a.x);
+console.log(b.x);",{n: 2} undefined,undefined {n: 2},{n: 2} {n: 2},undefined undefined,B,连续赋值从右到左执行，但属性访问的引用在赋值前就已确定。a.x的引用指向原对象（b也指向它）。先执行a = {n:2}，a指向新对象。然后执行a.x = {n:2}，但这里的a.x的引用是之前确定的旧对象的x属性。所以旧对象（b指向的）获得x属性值为{n:2}，新对象（a指向的）没有x属性。
+11,javascript,执行以下 JavaScript 代码，输出结果为（）,single,"var a = 4399 < 0 || typeof(4399 + '');
+console.log(a);",true,string,number,false,B,
+12,javascript,以下四行代码的执行结果分别是？,single,"undefined == null
+0 == NaN
+'' == 0
+'' == null",true true true false,true false true false,false false true false,false true false true,B,"1. 在 JavaScript 里，undefined和null在进行宽松相等（==）比较时，它们被当作相等，这是语言本身的特殊设定。   
+2. NaN和任何值（包括它自身）进行比较，结果都为false，这是NaN的特性。
+3. null不会发生类型转换，空字符串和null属于不同类型，因此结果为false。"
+13,javascript,请问以下JS代码最终输出的结果是（）,single,"const [a, b] = '123';
+const {c, d} = '123';
+console.log(a);
+console.log(b);
+console.log(c);
+console.log(d);",undefined、undefined、undefined、undefined,1、2、1、2,undefined、undefined、1、2,1、2、undefined、undefined,D,"const [a, b] = '123';
+这里是对字符串进行数组解构赋值。字符串是可迭代的，所以 '123' 相当于 ['1','2','3']。那么 a 得到 '1'，b 得到 '2'。所以 a 是 '1'，b 是 '2'。
+const {c, d} = '123';
+这里是对字符串进行对象解构赋值。字符串会被转换为对象，类似 new String('123')，它有属性索引：0,1,2 和 length 等。解构 {c, d} 会尝试从该对象中查找属性名为 c 和 d 的属性。字符串对象没有 c 和 d 属性，所以 c 和 d 都是 undefined。"
 FLUSH1,frontend,以下哪个选项不是动态加载DLL时需要做的事情？,single,,引入lib文件,引入带有库函数声明、定义的头文件,调用LoadLibrary或LoadLibraryEx,调用GetProcAddress,A,"同花顺前端笔试第一题
 DLL（动态链接库）是一个包含可执行函数和资源的模块，通常用于共享代码和资源。它的文件扩展名为 .dll，在Windows系统中被广泛使用。DLL文件不能独立运行，而是需要由其他应用程序调用。它的主要作用是通过动态链接机制，在程序运行时加载所需的函数或资源，从而提高代码复用性和程序效率。
 调用DLL主要有静态调用和动态调用两种方式。
