@@ -140,6 +140,66 @@ console.log(d);",undefined、undefined、undefined、undefined,1、2、1、2,und
 这里是对字符串进行数组解构赋值。字符串是可迭代的，所以 '123' 相当于 ['1','2','3']。那么 a 得到 '1'，b 得到 '2'。所以 a 是 '1'，b 是 '2'。
 const {c, d} = '123';
 这里是对字符串进行对象解构赋值。字符串会被转换为对象，类似 new String('123')，它有属性索引：0,1,2 和 length 等。解构 {c, d} 会尝试从该对象中查找属性名为 c 和 d 的属性。字符串对象没有 c 和 d 属性，所以 c 和 d 都是 undefined。"
+14,javascript,关于下面JS代码说法正确的是（）,single,"console.log('start')
+async function ac () {
+  console.log('ac-start');
+  await new Promise((resolve) => {
+    resolve('p3');
+  }).then((res) => {
+    console.log(res);
+  });  
+  await new Promise((resolve) => {
+    console.log('p1');
+    return 'p2';
+  })
+  console.log('success');
+  return 'ac-end';
+}
+ac().then(res => console.log(res));
+console.log('end');",第一个Promise，状态被切换为Resolved，允许代码继续往下执行,代码的打印顺序是：start ac-start end p3 p1,代码的打印顺序是：start ac-start end p3  p1 p2,第二个Promise，函数有返回，允许代码继续往下执行，能够打印出p2,B,"解析
+第一步
+首先执行整个脚本，这本身是一个宏任务。
+1. 输出start
+2. 遇到ac().then(……)
+2.1 执行同步代码，输出ac-start
+2.2 遇到await new Promise
+2.2.1 执行Promise代码resolve('p3')，状态变为fulfilled。
+2.2.2 由于Promise已解决，回调被放入微任务队列。注册微任务
+P1(console.log('p3'))。
+2.2.3 await后的代码暂停执行。
+3. 输出end
+控制台：start ac-start end
+微任务：[P1(console.log('p3'))]
+宏任务：[]
+第二步
+清空微任务队列。
+1. 执行微任务P1，输出p3。
+2. await等待的Promise状态变为resolved。
+3. 引擎将async函数中第一个await之后的剩余代码包装成一个新的微任务P2。
+控制台：start ac-start end p3
+微任务：[P2]
+宏任务：[]
+第三步
+清空微任务队列。
+1. 执行微任务P2。
+2. 遇到await new Promise
+2.1 执行Promise代码，输出p1，执行 return 'p2'（无效，不改变 Promise 状
+态）
+2.2 await 遇到 pending 状态的 Promise，再次暂停 async 函数
+没有调用 resolve，因此第二个 await 返回的 Promise 永远处于 pending，导
+致不会将后续代码加入微任务队列，且ac().then(...)也永远不会执行。
+控制台：start ac-start end p3 p1
+微任务：[]
+宏任务：[]"
+15,javascript,以下代码的输出结果是什么？,single,"async function foo() {
+    console.log(1);
+    const p = Promise.resolve();
+    await p;
+    console.log(2);
+}
+console.log(3);
+foo();
+console.log(4);",3 1 4 2,3 1 2 4,1 3 4 2,3 4 1 2,A,console.log(3)先执行输出3，然后调用foo()，同步执行函数体到await之前，输出1。await p会将后续代码放入微任务队列。控制权返回主线程，输出4。微任务队列执行，输出2。最终顺序为3 1 4 2。
 FLUSH1,frontend,以下哪个选项不是动态加载DLL时需要做的事情？,single,,引入lib文件,引入带有库函数声明、定义的头文件,调用LoadLibrary或LoadLibraryEx,调用GetProcAddress,A,"同花顺前端笔试第一题
 DLL（动态链接库）是一个包含可执行函数和资源的模块，通常用于共享代码和资源。它的文件扩展名为 .dll，在Windows系统中被广泛使用。DLL文件不能独立运行，而是需要由其他应用程序调用。它的主要作用是通过动态链接机制，在程序运行时加载所需的函数或资源，从而提高代码复用性和程序效率。
 调用DLL主要有静态调用和动态调用两种方式。
