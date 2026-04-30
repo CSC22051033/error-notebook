@@ -15,8 +15,15 @@
           <a href="/know-list">知识点</a>
         </div>
       </div>
+
+      <div class="dropdown">
+        <a href="/import" class="dropbtn">编辑</a>
+        <div class="dropdown-content">
+          <a href="/import">导入</a>
+          <a href="/label">标签</a>
+        </div>
+      </div>
       
-      <a href="/import">导入</a>
       <a href="/practice">练习</a>
     </nav>
   </header>

@@ -4,6 +4,7 @@ import ListView from '../views/ListView.vue'
 import PastListView from '../views/PastListView.vue'
 import KnowListView from '../views/KnowListView.vue'
 import QuestionView from '../views/QuestionView.vue'
+import LabelView from '../views/LabelView.vue'
 
 const routes = [
   {
@@ -14,7 +15,12 @@ const routes = [
     name: 'Import',
     component: ImportView
   },
-    {
+  {
+    path: '/label',
+    name: 'Label',
+    component: LabelView
+  },
+  {
     path: '/list',
     name: 'List',
     component: ListView
