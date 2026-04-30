@@ -1,12 +1,19 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 
 // 定义响应式数据
 const loading = ref(false)
 const error = ref('')
 const questions = ref([])
+const labels = ref([])
 const currentPage = ref(1)
 const pageSize = 10
+const searchText = ref('')
+const selectedLabel = ref('不限')
+const appliedSearchText = ref('')
+const appliedSelectedLabel = ref('不限')
+const labelOptions = ref(['不限'])
+const searchSummary = ref('当前显示全部题目')
 
 // 解析ID的辅助函数
 function parseId(id) {
@@ -17,12 +24,55 @@ function parseId(id) {
 }
 
 // 计算分页数据
-const totalPages = computed(() => Math.ceil(questions.value.length / pageSize))
+const filteredQuestions = computed(() => {
+    const keyword = appliedSearchText.value.trim()
+    return questions.value.filter(q => {
+        const matchesText = !keyword || q.id.includes(keyword) || q.knowledgeType.includes(keyword) || q.questionStem.includes(keyword) || q.questionType.includes(keyword) || q.questionContent.includes(keyword)
+        const labelPrefixes = parseLabelPrefixes((labels.value.find(item => item.id === q.id)?.label) || '')
+        const matchesLabel = appliedSelectedLabel.value === '不限' || labelPrefixes.includes(appliedSelectedLabel.value)
+        return matchesText && matchesLabel
+    })
+})
+
+const totalPages = computed(() => Math.ceil(filteredQuestions.value.length / pageSize))
 const paginatedQuestions = computed(() => {
     const start = (currentPage.value - 1) * pageSize
     const end = start + pageSize
-    return questions.value.slice(start, end)
+    return filteredQuestions.value.slice(start, end)
 })
+
+watch(totalPages, (value) => {
+    if (currentPage.value > value && value > 0) {
+        currentPage.value = value
+    }
+    if (value === 0) {
+        currentPage.value = 1
+    }
+})
+
+// 解析标签前两部分 a-b
+function parseLabelPrefixes(label) {
+    if (!label) return []
+    const parts = label.split(/[;；]/).map(item => item.trim()).filter(Boolean)
+    const prefixes = []
+    for (const part of parts) {
+        const segments = part.split('-').map(seg => seg.trim()).filter(Boolean)
+        if (segments.length >= 2) {
+            prefixes.push(`${segments[0]}-${segments[1]}`)
+        } else if (segments.length === 1) {
+            prefixes.push(segments[0])
+        }
+    }
+    return prefixes
+}
+
+function buildLabelOptions(rawLabels) {
+    const set = new Set()
+    for (const item of rawLabels) {
+        parseLabelPrefixes(item.label).forEach(prefix => set.add(prefix))
+    }
+    return ['不限', ...Array.from(set).sort()]
+}
 
 // 获取题目列表
 async function fetchQuestions() {
@@ -77,6 +127,28 @@ async function fetchQuestions() {
     }
 }
 
+async function fetchLabelOptions() {
+    try {
+        const res = await fetch('http://localhost:3000/api/labels')
+        const result = await res.json()
+        if (result.success) {
+            labels.value = result.data
+            labelOptions.value = buildLabelOptions(result.data)
+        } else {
+            labelOptions.value = ['不限']
+        }
+    } catch (err) {
+        labelOptions.value = ['不限']
+    }
+}
+
+function performSearch() {
+    appliedSearchText.value = searchText.value
+    appliedSelectedLabel.value = selectedLabel.value
+    currentPage.value = 1
+    searchSummary.value = `搜索内容：${searchText.value || '空'}，标签：${selectedLabel.value}`
+}
+
 // 上一页
 function prevPage() {
     if (currentPage.value > 1) {
@@ -104,18 +176,38 @@ function getTypeText(type) {
 
 onMounted(() => {
     fetchQuestions()
+    fetchLabelOptions()
 })
 </script>
 
 <template>
     <div class="container">
         <h2>题目列表</h2>
+
+        <div class="select">
+            <div class="search-row">
+                <input
+                    v-model="searchText"
+                    type="text"
+                    placeholder="请输入搜索内容"
+                    class="search-input"
+                />
+                <select v-model="selectedLabel" class="label-select">
+                    <option v-for="option in labelOptions" :key="option" :value="option">
+                        {{ option }}
+                    </option>
+                </select>
+                <button @click="performSearch" class="search-btn">搜索</button>
+            </div>
+            <div class="search-summary">{{ searchSummary }}</div>
+        </div>
+
         <!--<button @click="fetchQuestions" class="refresh-btn">刷新</button>-->
 
         <div v-if="loading" class="loading">加载中...</div>
         <div v-if="error" class="error">{{ error }}</div>
         
-        <table v-if="!loading && questions.length > 0">
+        <table v-if="!loading && filteredQuestions.length > 0">
             <thead>
                 <tr>
                     <th>序号</th>
@@ -134,7 +226,7 @@ onMounted(() => {
             </tbody>
         </table>
         
-        <div v-if="!loading && questions.length === 0" class="empty">
+        <div v-if="!loading && filteredQuestions.length === 0" class="empty">
             暂无题目数据
         </div>
         
@@ -252,5 +344,54 @@ tr:hover {
 .page-info {
     margin: 0 10px;
     font-weight: bold;
+}
+
+.select {
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.search-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.search-input,
+.label-select {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.label-select {
+    max-width: 240px;
+}
+
+.search-btn {
+    flex: 0 0 auto;
+    padding: 10px 24px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-btn:hover {
+    background: #1976D2;
+}
+
+.search-summary {
+    margin-top: 12px;
+    color: #444;
+    font-size: 14px;
 }
 </style>
