@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 // 定义响应式数据
 const loading = ref(false)
@@ -14,6 +15,35 @@ const appliedSearchText = ref('')
 const appliedSelectedLabel = ref('不限')
 const labelOptions = ref(['不限'])
 const searchSummary = ref('当前显示全部题目')
+
+const route = useRoute()
+const router = useRouter()
+
+function loadQueryFromRoute() {
+    const { searchText: qSearchText, selectedLabel: qSelectedLabel, page: qPage } = route.query
+    if (typeof qSearchText === 'string' && qSearchText.trim() !== '') {
+        searchText.value = qSearchText
+        appliedSearchText.value = qSearchText
+    }
+    if (typeof qSelectedLabel === 'string' && qSelectedLabel.trim() !== '') {
+        selectedLabel.value = qSelectedLabel
+        appliedSelectedLabel.value = qSelectedLabel
+    }
+    if (typeof qPage === 'string' && !isNaN(Number(qPage))) {
+        currentPage.value = Math.max(1, Number(qPage))
+    }
+    if (qSearchText || qSelectedLabel) {
+        searchSummary.value = `搜索内容：${searchText.value || '空'}，标签：${selectedLabel.value}`
+    }
+}
+
+function syncRouterQuery() {
+    const query = {}
+    if (searchText.value) query.searchText = searchText.value
+    if (selectedLabel.value && selectedLabel.value !== '不限') query.selectedLabel = selectedLabel.value
+    if (currentPage.value > 1) query.page = String(currentPage.value)
+    router.replace({ path: '/list', query })
+}
 
 // 解析ID的辅助函数
 function parseId(id) {
@@ -116,7 +146,6 @@ async function fetchQuestions() {
             }
             // 设置排序后的数据
             questions.value = data
-            currentPage.value = 1 // 刷新时重置到第一页
         } else {
             error.value = result.error || '获取失败'
         }
@@ -147,7 +176,12 @@ function performSearch() {
     appliedSelectedLabel.value = selectedLabel.value
     currentPage.value = 1
     searchSummary.value = `搜索内容：${searchText.value || '空'}，标签：${selectedLabel.value}`
+    syncRouterQuery()
 }
+
+watch(currentPage, () => {
+    syncRouterQuery()
+})
 
 // 上一页
 function prevPage() {
@@ -175,6 +209,7 @@ function getTypeText(type) {
 }
 
 onMounted(() => {
+    loadQueryFromRoute()
     fetchQuestions()
     fetchLabelOptions()
 })
@@ -218,7 +253,7 @@ onMounted(() => {
             </thead>
             <tbody>
                 <tr v-for="q in paginatedQuestions" :key="q.id">
-                    <td><a :href="`/questions/${q.id}`">{{ q.id }}</a></td>
+                    <td><router-link :to="{ name: 'Question', params: { id: q.id }, query: route.query }">{{ q.id }}</router-link></td>
                     <td>{{ q.knowledgeType }}</td>
                     <td>{{ getTypeText(q.questionType) }}</td>
                     <td class="stem">{{ q.questionStem }}</td>

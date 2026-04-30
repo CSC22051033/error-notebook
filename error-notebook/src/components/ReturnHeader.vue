@@ -1,9 +1,11 @@
 <script setup>
+import { useRoute } from 'vue-router'
+const route = useRoute()
 </script>
 
 <template>
   <header>
-    <a href="/list"><返回</a>
+    <router-link :to="{ path: '/list', query: route.query }">< 返回</router-link>
   </header>
 </template>
 

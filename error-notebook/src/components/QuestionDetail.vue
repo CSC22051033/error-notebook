@@ -1,9 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const router = useRouter()
 
 const loading = ref(false)
 const error = ref('')
@@ -60,6 +59,10 @@ async function fetchDetail() {
 onMounted(() => {
     fetchDetail()
 })
+
+watch(() => route.params.id, () => {
+    fetchDetail()
+})
 </script>
 
 <template>
@@ -86,9 +89,9 @@ onMounted(() => {
             </div>
 
             <div class="bottom-button">
-                <button><a :href="`/questions/${changeId(question.id, -1)}`">上一题</a></button>
+                <router-link class="nav-btn" :to="{ name: 'Question', params: { id: changeId(question.id, -1) }, query: route.query }">上一题</router-link>
                 <button @click="toggleAnswer">确认</button>
-                <button><a :href="`/questions/${changeId(question.id, 1)}`">下一题</a></button>
+                <router-link class="nav-btn" :to="{ name: 'Question', params: { id: changeId(question.id, 1) }, query: route.query }">下一题</router-link>
             </div>
         </div>
     </div>
@@ -170,8 +173,20 @@ label {
 
 /* 按钮基础样式 */
 .bottom-button button,
-.bottom-button .btn {
+.bottom-button .nav-btn {
     font-size: 20px;
     font-weight: 500;
+    padding: 10px 18px;
+    border: 1px solid #1890ff;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #1890ff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.bottom-button button:hover,
+.bottom-button .nav-btn:hover {
+    background-color: #e6f7ff;
 }
 </style>
