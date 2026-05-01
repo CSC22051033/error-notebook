@@ -7,6 +7,7 @@ const route = useRoute()
 const loading = ref(false)
 const error = ref('')
 const question = ref(null)
+const labels = ref([])
 
 const showAnswer = ref(false)
 
@@ -30,6 +31,18 @@ function changeId(id, delta = 1) {
     return prefix + newNum;
 }
 
+async function fetchLabels() {
+    try {
+        const res = await fetch('http://localhost:3000/api/labels')
+        const result = await res.json()
+        if (result.success) {
+            labels.value = result.data
+        }
+    } catch (err) {
+        // ignore
+    }
+}
+
 async function fetchDetail() {
     loading.value = true;
     const id = route.params.id
@@ -43,7 +56,11 @@ async function fetchDetail() {
             question.value = result.data.find(q => q.id == id)
             console.log(question.value);
             
-            if (!question.value) {
+            if (question.value) {
+                // 获取标签
+                await fetchLabels()
+                question.value.label = labels.value.find(l => l.id == question.value.id)?.label || ''
+            } else {
                 error.value = '题目不存在'
             }
         } else {
@@ -86,6 +103,9 @@ watch(() => route.params.id, () => {
             <div class="analysis" v-show="showAnswer">
                 <pre v-if="question.answer"><b>正确答案:</b> <a class="answer">{{ question.answer }}</a></pre>
                 <pre v-if="question.analysis"><b>解析:</b> <br>{{ question.analysis }}</br></pre>
+                <div v-if="question.label" class="labels">
+                    <span v-for="tag in question.label.split(/[;；]/)" :key="tag" class="tag">{{ tag.trim() }}</span>
+                </div>
             </div>
 
             <div class="bottom-button">
@@ -159,6 +179,15 @@ label {
 .answer{
     color: green;
     font-weight: bolder;
+}
+
+.tag {
+    display: inline-block;
+    background-color: #d8fb138b;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-left: 20px;
+    font-size: 0.9rem;
 }
 
 .bottom-button {
