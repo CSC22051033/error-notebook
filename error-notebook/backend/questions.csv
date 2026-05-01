@@ -210,6 +210,78 @@ for(var i=0;i<2;i++){
         console.log(i)
     },100);
 }",0 1 2 2,0 1 0 1,0 1 1 1,1 1 0 0,A,
+17,javascript,非严格模式下，下面给定的代码中， myFunc() 返回什么？,single,"var foo='foo';
+var bar='bar';
+function myFunc() {
+    return foo+bar;
+}
+myFunc();",抛出异常，超出访问范围,undefined,foobar,foo+bar,C,"代码等价于
+// 1. 函数提升
+function myFunc() {
+    return foo + bar;
+}
+// 2. 变量声明提升（此时 foo, bar 初始化为 undefined）
+var foo;
+var bar;
+// 3. 赋值操作留在原地
+foo = 'foo';
+bar = 'bar';
+// 4. 调用函数
+myFunc();  // 'foobar'"
+18,javascript,在 es6 中，下面程序运行结果输出，选项结果正确的是,single,"for(let i=0;i<12;i++){} console.log(i);
+const a = 12;a=13;
+console.log(a);
+const g = {b:3};
+console.log(g.b);
+g.b=12;console.log(g.b);
+let [head,...tail] = [1,2,3,4];
+conole.log(tail);","11,13,3,12，[3,4]","i not defined ,TypeError,TypeErrpr,4","11,12,3,3,4","i not defined,TypeError,3,12,[2,3,4]",D,"1. for(let i=0;i<12;i++){} console.log(i)
+let声明的变量具有块级作用域,i只在for循环内部有效,循环结束后访问i会报""i not defined""错误。
+2. const a = 12;a=13;
+const声明的基本类型变量不能重新赋值,会抛出TypeError。
+3. const g = {b:3}; console.log(g.b); g.b=12;console.log(g.b);
+const声明的对象,虽然不能改变对象的引用,但可以修改对象的属性。所以输出是3,12。
+4. let [head,...tail] = [1,2,3,4];console.log(tail);
+这是数组的解构赋值,head获取第一个元素1,tail获取剩余元素[2,3,4]。
+所以D选项""i not defined,TypeError,3,12,[2,3,4]""是正确答案。"
+19,javascript,如下代码输出的结果是什么：,single,"console.log(1+ ""2""+""2"");
+console.log(1+ +""2""+""2"");
+console.log(""A""- ""B""+""2"");
+console.log(""A""- ""B""+2);",122 122 NaN NaN,122 32 NaN NaN2,122 32 NaN2 NaN,122 32 NaN2 NaN2,C,"让我们逐行分析这段代码的执行过程:
+1. console.log(1+ ""2""+""2"")
+当数字1和字符串""2""相加时,数字会被转换为字符串,然后进行字符串拼接,所以1+""2""=""12"",再加上""2""得到""122""
+2. console.log(1+ +""2""+""2"")
+这里的第二个+是一元运算符,会将字符串""2""转换为数字2,所以1+ +""2""=1+2=3,然后3与最后的""2""字符串拼接,得到""32""
+3. console.log(""A""- ""B""+""2"")
+字符串相减会得到NaN(Not a Number),然后NaN与字符串""2""拼接,得到""NaN2""
+4. console.log(""A""- ""B""+2)
+同样字符串相减得到NaN,但这次是NaN与数字2相加,结果仍然是NaN
+所以最终输出结果为:
+122
+32
+NaN2
+NaN"
+20,javascript,下面一段JavaScript代码的运行结果是,single,"var a,b;
+(function(){
+    alert(a);
+    alert(b);
+    var a=b=3;
+    alert(a);
+    alert(b);
+})();
+alert(a);
+alert(b);","undefined，undefined，3,3，undefined，3","undefined，undefined，3,3，undefined，undefined","0，0，3,3，undefined，undefined","undefined，undefined，3,3，0，0",A,"var a, b;
+(function(){
+    var a;
+    alert(a);   // undefined
+    alert(b);   // undefined
+    b = 3;  // 全局变量b=3
+    a = b;  // a=3
+    alert(a);   // 3
+    alert(b);   // 3
+})();
+alert(a);   // undefined
+alert(b);   // 3"
 FLUSH1,frontend,以下哪个选项不是动态加载DLL时需要做的事情？,single,,引入lib文件,引入带有库函数声明、定义的头文件,调用LoadLibrary或LoadLibraryEx,调用GetProcAddress,A,"同花顺前端笔试第一题
 DLL（动态链接库）是一个包含可执行函数和资源的模块，通常用于共享代码和资源。它的文件扩展名为 .dll，在Windows系统中被广泛使用。DLL文件不能独立运行，而是需要由其他应用程序调用。它的主要作用是通过动态链接机制，在程序运行时加载所需的函数或资源，从而提高代码复用性和程序效率。
 调用DLL主要有静态调用和动态调用两种方式。
