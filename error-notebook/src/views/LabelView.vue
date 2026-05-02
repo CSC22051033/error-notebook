@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 const id = ref('')
 const label = ref('')
@@ -7,6 +7,47 @@ const loading = ref(false)
 const error = ref('')
 const message = ref('')
 const labels = ref([])
+const currentPage = ref(1)
+const pageSize = 10
+const searchText = ref('')
+const appliedSearchText = ref('')
+const showForm = ref(false)
+
+const filteredLabels = computed(() => {
+    const keyword = appliedSearchText.value.trim()
+    return labels.value.filter(item => 
+        !keyword || item.label.includes(keyword)
+    )
+})
+
+const totalPages = computed(() => Math.ceil(filteredLabels.value.length / pageSize))
+
+const paginatedLabels = computed(() => {
+    const start = (currentPage.value - 1) * pageSize
+    const end = start + pageSize
+    return filteredLabels.value.slice(start, end)
+})
+
+function performSearch() {
+    appliedSearchText.value = searchText.value
+    currentPage.value = 1
+}
+
+function prevPage() {
+    if (currentPage.value > 1) {
+        currentPage.value--
+    }
+}
+
+function nextPage() {
+    if (currentPage.value < totalPages.value) {
+        currentPage.value++
+    }
+}
+
+function toggleForm() {
+    showForm.value = !showForm.value
+}
 
 async function fetchLabels() {
   loading.value = true
@@ -73,11 +114,24 @@ onMounted(() => {
 <template>
   <div class="label-container">
     <h2>标签管理</h2>
-    <div class="description">
+
+    <div class="search-row">
+      <input
+        v-model="searchText"
+        type="text"
+        placeholder="请输入搜索内容（标签内容）"
+        class="search-input"
+        @keyup.enter="performSearch"
+      />
+      <button @click="performSearch" class="search-btn">搜索</button>
+      <button @click="toggleForm" class="insert-btn">{{ showForm ? '隐藏插入' : '插入标签' }}</button>
+    </div>
+
+    <div v-if="showForm" class="description">
       请输入题目ID和标签，多个标签请用";"分隔，例如：知识点1;知识点2。
     </div>
 
-    <div class="form-card">
+    <div v-if="showForm" class="form-card">
       <div class="form-row">
         <label>题目ID</label>
         <input v-model="id" type="text" placeholder="输入题目ID" />
@@ -97,8 +151,8 @@ onMounted(() => {
     <div class="table-card">
       <h3>当前标签列表</h3>
       <div v-if="loading" class="loading">加载中...</div>
-      <div v-if="!loading && labels.length === 0" class="empty">暂无标签数据</div>
-      <table v-if="!loading && labels.length > 0">
+      <div v-if="!loading && filteredLabels.length === 0" class="empty">暂无标签数据</div>
+      <table v-if="!loading && paginatedLabels.length > 0">
         <thead>
           <tr>
             <th>题目ID</th>
@@ -106,13 +160,22 @@ onMounted(() => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in labels" :key="item.id">
+          <tr v-for="item in paginatedLabels" :key="item.id">
             <td>{{ item.id }}</td>
-            <td>{{ item.label }}</td>
+            <td>
+              <span v-for="tag in item.label.split(/[;；]/)" :key="tag" class="tag">{{ tag.trim() }}</span>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <div class="pageDiv" v-if="totalPages > 1">
+      <button @click="prevPage" :disabled="currentPage <= 1" class="page-btn">上一页</button>
+      <span class="page-info">第 {{ currentPage }} / {{ totalPages }} 页</span>
+      <button @click="nextPage" :disabled="currentPage >= totalPages" class="page-btn">下一页</button>
+    </div>
+    
   </div>
 </template>
 
@@ -127,6 +190,50 @@ onMounted(() => {
 h2 {
   text-align: center;
   margin-bottom: 16px;
+}
+
+.search-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.search-btn,
+.insert-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.search-btn {
+  background: #2196F3;
+  color: white;
+}
+
+.search-btn:hover {
+  background: #1976D2;
+}
+
+.insert-btn {
+  background: #67c23a;
+  color: white;
+}
+
+.insert-btn:hover {
+  background: #5cb85c;
 }
 
 .description {
@@ -220,5 +327,44 @@ th {
   padding: 18px 0;
   text-align: center;
   color: #999;
+}
+
+.pageDiv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.page-btn {
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 8px 16px;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #1976D2;
+}
+
+.page-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.page-info {
+  margin: 0 10px;
+  font-weight: bold;
+}
+
+.tag {
+  display: inline-block;
+  background-color: rgba(148, 227, 201, 1);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-left: 20px;
+  font-size: 0.9rem;
 }
 </style>
