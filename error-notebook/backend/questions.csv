@@ -282,6 +282,60 @@ alert(b);","undefined，undefined，3,3，undefined，3","undefined，undefined�
 })();
 alert(a);   // undefined
 alert(b);   // 3"
+21,javascript,依据以下JS代码，在位置A打印变量a与在位置B打印变量a各会有怎样的输出？,single,"var a = 1;
+function test(){
+    // 位置A
+class a {}
+   // 位置B
+}
+test();",1、class a {},报错、class a {},报错、报错,1、报错,B,class和let一样都有暂时性死区，在被声明前无法访问
+22,javascript,执行以下程序，输出结果为（）,single,"function fn(o,val){
+           o.b = 1;
+           val = 1;
+}
+var obj = {b:0};
+var num = 0;
+fn(obj,num);
+console.log(obj,num);",{b:0} 0,{b:1} 0,{b:0} 1,{b:1} 1,B,"这道题目考察了 JavaScript 中基本类型和引用类型的参数传递机制。
+正确答案 B ({b:1} 0) 的原因在于：
+1. 在 JavaScript 中，对象是通过引用传递的，而基本类型(如数字)是通过值传递的。
+2. 当执行 fn(obj,num) 时：
+- obj 作为对象是引用传递，所以函数内部修改 o.b = 1 会影响到外部的 obj 对象
+- num 作为数字是值传递，所以函数内部修改 val = 1 不会影响到外部的 num 变量"
+23,javascript,以下关于javascript判断语句说法不正确的是,single,,所有对象都被视为 true，即使是空对象 {},所有函数都被视为 true,NaN 被视为 true,除了空字符串 '' 以外的所有字符串都被视为 true,C,
+24,javascript,"""+new Array(017)"" 这段代码输出为？（）",single,,17,NaN,15,Error,B,"代码 ""+new Array(017)"" 的执行过程如下：
+1. 017 是八进制数字表示法，转换为十进制等于15
+2. new Array(15) 会创建一个长度为15的空数组
+3. 一元运算符 ""+"" 会尝试将数组转换为数字
+4. [,,……,,] -> NaN
+因此最终结果是 NaN，B选项正确。"
+25,javascript,请问函数test最终输出的值是多少？,single,"var a = 1;
+function test() {
+    console.log(a);
+    if(false) {
+        var a = 2;
+    }
+}
+test();",1,2,undefined,null,C,"函数会先去找自己内部的变量，内部有就不会往外面找，内部没有才去外面找 
+var a = 1;
+function test() {
+    console.log(a);
+    if(false) {
+        var a = 2;
+    }
+}
+test();
+//其实代码执行过程如下：
+var a ；
+a = 1;
+function test() { //函数会先去找自己内部的变量，内部有就不会往外面找，内部没有才去外面找
+    var a; //变量提升
+    console.log(a);
+    if(false) { //因为false没有满足if的条件，所以不能进入if语句里进行赋值
+        a = 2;    //if语句的条件把false改成true，就可以进入if语句赋值
+    }
+}
+test();"
 FLUSH1,frontend,以下哪个选项不是动态加载DLL时需要做的事情？,single,,引入lib文件,引入带有库函数声明、定义的头文件,调用LoadLibrary或LoadLibraryEx,调用GetProcAddress,A,"同花顺前端笔试第一题
 DLL（动态链接库）是一个包含可执行函数和资源的模块，通常用于共享代码和资源。它的文件扩展名为 .dll，在Windows系统中被广泛使用。DLL文件不能独立运行，而是需要由其他应用程序调用。它的主要作用是通过动态链接机制，在程序运行时加载所需的函数或资源，从而提高代码复用性和程序效率。
 调用DLL主要有静态调用和动态调用两种方式。

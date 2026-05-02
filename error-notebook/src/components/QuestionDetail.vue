@@ -183,7 +183,7 @@ label {
 
 .tag {
     display: inline-block;
-    background-color: #d8fb138b;
+    background-color: rgba(148, 227, 201, 1);
     border-radius: 4px;
     padding: 4px 8px;
     margin-left: 20px;
