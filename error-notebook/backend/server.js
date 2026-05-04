@@ -139,21 +139,30 @@ function getNextId() {
     let content = fs.readFileSync(CSV_FILE, 'utf8');
     content = removeBOM(content); // 去掉 BOM
     
-    const lines = content.split('\n').filter(line => line.trim() !== '');
-    
+    let lines = content.split('\n').map(
+        (value) => {
+            return value.split(',')[0];
+        }
+    );
+
+    lines = lines.filter(
+        (value) => {
+            if(typeof value === 'number')
+                return value;
+            else if(typeof value === 'string'){
+                if(!isNaN(Number(value)))
+                    return value;
+            }
+        }
+    )
+
     if (lines.length <= 1) {
         return 1;
     }
     
     let maxId = 0;
     for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (!line.trim()) continue;
-        
-        const firstComma = line.indexOf(',');
-        const idStr = firstComma > -1 ? line.substring(0, firstComma) : line;
-        const id = parseInt(idStr, 10);
-        
+        const id = parseInt(lines[i]);        
         if (!isNaN(id) && id > maxId) {
             maxId = id;
         }
