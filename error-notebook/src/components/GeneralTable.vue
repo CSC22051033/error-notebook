@@ -2,7 +2,7 @@
     import { computed, ref, watch } from 'vue'
     import { Edit, Delete } from '@element-plus/icons-vue' 
 
-    const emit = defineEmits(['edit', 'delete'])
+    const emit = defineEmits(['edit', 'delete', 'id-click'])
 
     // 定义 props 接收父组件传过来的数据
     const props = defineProps({
@@ -17,6 +17,10 @@
         error: {
             type: String,
             default: ''
+        },
+        fieldMapping: {
+            type: Object,
+            default: () => ({})
         }
     })
 
@@ -25,6 +29,10 @@
         if (props.data.length === 0) return []
         return Object.keys(props.data[0])
     })
+    // 获取表头显示文本（如果存在映射则用映射，否则用原键名）
+    const getHeaderLabel = (key) => {
+        return props.fieldMapping[key] || key
+    }
 
     // 修改：将整行数据传递给父组件
     const handleEdit = (item) => {
@@ -38,9 +46,14 @@
         }
     }
 
+    // id 列的点击处理
+    const handleIdClick = (idValue) => {
+        emit('id-click', { id: idValue })
+    }
+
     // 分页功能实现
     const currentPage = ref(1);
-    const pageSize = 5;
+    const pageSize = 10;
 
     const totalPages = computed(() => {
         const total = props.data.length
@@ -91,14 +104,17 @@
                 <thead>
                     <tr>
                         <th v-for="key in columns" :key="key">
-                            {{ key }}
+                            {{ getHeaderLabel(key) }}
                         </th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(item, index) in dataCurrent" :key="item.id ?? index">
-                        <td v-for="key in columns" :key="key">
+                        <td v-for="key in columns" 
+                            :key="key"
+                            :class="{ 'id-cell': key === 'id' }"
+                            @click="key === 'id' ? handleIdClick(item[key], item) : undefined">
                             {{ item[key] }}
                         </td>
                         <td class="action-group">
@@ -202,15 +218,30 @@
 /* 操作链接组 */
 .action-group {
     display: flex;
-    gap: 1rem;
     align-items: center;
-    flex-wrap: wrap;
+}
+.blue-table td.action-group {
+    border-bottom: none;
 }
 
 .pageDiv {
   width: 100%;
   display: flex;
   justify-content: space-between;
+}
+
+.container{
+    width: 96%;
+    overflow-x: auto;
+}
+
+.id-cell {
+    color: #409eff;
+    cursor: pointer;
+    text-decoration: underline;
+}
+.id-cell:hover {
+    color: #66b1ff;
 }
 </style>
 
