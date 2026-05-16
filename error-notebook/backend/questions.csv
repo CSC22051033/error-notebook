@@ -257,10 +257,7 @@ console.log(""A""- ""B""+2);",122 122 NaN NaN,122 32 NaN NaN2,122 32 NaN2 NaN,12
 4. console.log(""A""- ""B""+2)
 同样字符串相减得到NaN,但这次是NaN与数字2相加,结果仍然是NaN
 所以最终输出结果为:
-122
-32
-NaN2
-NaN"
+122 32 NaN2 NaN"
 20,javascript,下面一段JavaScript代码的运行结果是,single,"var a,b;
 (function(){
     alert(a);
@@ -336,6 +333,153 @@ function test() { //函数会先去找自己内部的变量，内部有就不会
     }
 }
 test();"
+26,javascript,如何判断一个对象是否是Array，假设 arr 变量为要要判断的值，其中最准确的方法是？,single,,typeof(arr) === 'Array';,arr.isArray() === true;,arr.toString() ==='[object Array]';,Object.prototype.toString.call(arr) === '[object Array]';,D,"A选项中的typeof(arr) 返回的是 Object
+B选项正确的用法是 Array.isArray(arr) === true
+C选项 arr.toString() 返回的是数组的内容"
+27,javascript,存在变量 var a = 10.42; 取出 a 的整数部分，以下代码哪些是正确的？,multiple,,parseInt(a);,Math.floor(a);,Math.ceil(a);,a.split('.')[0];,AB,"对于取出10.42的整数部分，A选项parseInt(a)和B选项Math.floor(a)都是正确的方法。
+parseInt()函数将字符串或数字解析成整数，它会直接去掉小数部分。当传入数字10.42时，返回10。
+Math.floor()函数返回小于或等于给定数字的最大整数。对于正数来说，它相当于直接舍去小数部分，所以Math.floor(10.42)返回10。
+分析错误选项：
+C. Math.ceil()函数是向上取整，会返回大于或等于给定数字的最小整数。对于10.42，Math.ceil()会返回11，不符合题目要求。
+D. split('.')方法是字符串操作方法，不能直接用于数字类型。即使将数字转为字符串a.toString()后再split('.')，这种方式也不够专业，因为:
+1) 需要额外的类型转换
+2) 不能处理负数情况
+3) 代码可读性较差
+所以A和B是最合适的解决方案。它们都是JavaScript内置的处理数字的标准方法，具有更好的性能和可读性。"
+28,javascript,以下代码的输出是什么？,single,"console.log(0.1 + 0.2 === 0.3);
+console.log(Number.EPSILON > Math.abs(0.1 + 0.2 - 0.3));",true true,false false,false true,true false,C,由于IEEE 754浮点数精度问题，0.1+0.2的结果是0.30000000000000004，不等于0.3。所以第一个输出false。Number.EPSILON是JavaScript中能表示的最小精度差（约2.22e-16），而Math.abs(0.1+0.2-0.3)约为5.55e-17，小于EPSILON。所以第二个输出true，这是判断浮点数近似相等的常用方法。
+29,javascript,x 的值是：,single,"function A() {
+    this.do=function() {return ‘foo’;};
+}
+A.prototype=function() {
+    this.do=function() {return ‘bar’};
+};
+var x=new A().do();",bar,报错,foo,undefined,C,"这道题目主要考察 JavaScript 中构造函数、原型链和函数执行优先级的相关知识点。
+在代码中，x 的值为 'foo'，原因如下：
+1. 当执行 new A() 时，会创建一个新的对象实例。在构造函数 A 中，通过 this.do 定义了一个方法，返回 'foo'。
+2. 虽然代码试图通过 A.prototype 设置原型方法，但是设置方式有误：
+- A.prototype 被赋值为一个函数，而不是一个对象
+- 这个函数永远不会被执行，因为它不是正确的原型设置方式
+- 正确的设置方式应该是 A.prototype.do = function() { return 'bar'; }
+3. 实例方法优先级高于原型方法。即使原型上定义了同名方法，实例上的方法会优先被调用。"
+30,javascript,下列选项中，不属于JavaScript继承的方式的一项是（）,single,,原型链继承,构造函数继承,组合继承,关联继承,D,"A. 原型链继承:是JavaScript最基本的继承方式,通过将子类的原型指向父类的实例来实现继承。主要使用prototype属性实现。
+B. 构造函数继承:通过在子类构造函数中调用父类构造函数(使用call或apply方法)来实现继承,可以实现实例属性的继承。
+C. 组合继承:结合了原型链继承和构造函数继承的优点,是JavaScript中最常用的继承模式。既能继承原型属性和方法,又能继承实例属性。
+D. 关联继承:这个名词在JavaScript中并不存在,这是一个错误的说法。JavaScript中没有""关联继承""这种继承方式。
+实际上,JavaScript中还有其他继承方式,如寄生式继承、寄生组合继承等,但""关联继承""并不在其中。因此D选项是不属于JavaScript继承方式的选项。"
+31,javascript,请问以下JS代码最终输出的结果是（）,single,"class cls1 {};
+class cls2 extends Object{};
+console.log(cls1.__proto__ === Function.prototype);
+console.log(cls1.prototype.__proto__ === Object.prototype);
+console.log(cls2.__proto__ === Object);
+console.log(cls2.prototype.__proto__ === Object.prototype);",false、false、true、true,true、true、false、false,true、true、true、true,true、false、true、true,C,"当一个类不存在任何继承即作为一个基类时，该类就是一个普通函数。因此类cls1就直接继承了Function.prototype，第一个打印输出true，选项A错误。
+但是由于类cls1实例化后是返回一个空对象即Object实例，因此cls1.prototype.__proto__就是指向构造函数Object的prototype属性，第二个打印输出true，选项D错误。
+如果是子类继承了Object类则可以认为子类是Object的复刻，因此类cls2其实就是构造函数Object的复刻，cls2的实例就是Object的实例，则cls2.__proto__指向Object、cls2.prototype.__proto__ 指向Object.prototype，第三四个打印输出true，选项B错误。
+所以代码最终输出的结果是true、true、true、true，选项C正确。"
+32,javascript,请问以下JS代码输出结果是什么？,single,"console.log(typeof ''.prototype);
+console.log(typeof ''.__proto__); 
+console.log(typeof ''.__proto__ === typeof ''.prototype);",object、object、true,undefined、undefined、true,undefined、object、false,object、undefined、false,C,"这道题目考察JavaScript中原型(prototype)和原型链(__proto__)的概念理解。让我们逐行分析代码输出:
+1. typeof ''.prototype 结果为 undefined
+因为只有函数对象才有prototype属性,而字符串是基本数据类型,没有prototype属性。
+2. typeof ''.__proto__ 结果为 object
+所有JavaScript对象(包括字符串)都有__proto__属性,指向该对象的原型。字符串的__proto__指向String.prototype,是一个对象。
+3. typeof ''.__proto__ === typeof ''.prototype 结果为 false
+因为前者结果是object,后者是undefined,两者类型不同,所以返回false。"
+33,javascript,请问以下JS代码输出的结果是什么？,single,"function f(x) {
+  console.log(x);
+  var x = 200;
+  console.log(x);
+  }
+f(a = 100);
+console.log(a);",undefined、200、undefined,100、200、undefined,100、200、100,undefined、200、100,C,"这道题目考察了JavaScript中变量声明、函数参数传递以及变量作用域的概念。让我们逐行分析代码执行过程：
+f(a = 100) 这种调用方式会先将 a 赋值为 100，然后将 100 作为参数传入函数 f。这里的 a 会成为全局变量。
+在函数 f 内部：
+1. 第一个 console.log(x) 输出 100，因为这是传入的参数值
+2. var x = 200 会重新定义局部变量 x 并赋值为 200
+3. 第二个 console.log(x) 输出 200，这是局部变量 x 的新值
+4. 函数执行完后，最后一行 console.log(a) 输出 100，因为这是在全局作用域中访问之前赋值的全局变量 a
+所以输出顺序是：100、200、100，C 选项正确。
+这个题目还体现了 JavaScript 中变量提升(hoisting)的特性，尽管函数内部有 var x 的声明，但由于参数 x 的优先级更高，所以第一个输出仍然是参数值 100。"
+34,javascript,下列程序的输出结果是（）,single,"let func1 = (a, b) => a + b;
+console.info(func1(1, 1));
+let func2 = (a, b) => {a + b};
+console.info(func2(1, 1));
+let func3 = (a, b) => {return a + b};
+console.info(func3(1, 1));",undefined 2 2,undefined undefined 2,2 undefined 2,2 2 2,C,该问题考察 ES6 中的箭头函数，若箭头函数代码块部分没有大括号，默认返回表达式的结果，所以第一个输出应该为 2。若有大括号但是没有 return 语句，则没有任何返回值，所以第二个输出应为 undefined。若箭头函数代码块有大括号且有 return 语句，则返回结果，所以第三个输出为 2。综上正确输出为：2 undefined 2，C 选项正确。
+35,javascript,假设 output 是一个函数，用来输出一行文本。下面这行语句输出结果是什么？,single,output(typeof (function() {output(“Hello World!”)})());,Object,string,function,Hello World! undefined,D,"这道题目考察了JavaScript中自执行函数表达式(IIFE)和typeof操作符的运行机制。
+代码中包含了一个立即执行的匿名函数表达式。让我们逐步分析执行过程：
+1. 首先,定义了一个匿名函数 function() {output(""Hello World!"")}
+2. 通过末尾的()立即执行这个函数
+3. 函数执行时会先输出""Hello World!""
+4. 函数没有显式的return语句,所以返回undefined
+5. 最后对这个undefined值执行typeof操作,结果为""undefined""
+6. 最终输出""undefined""
+所以完整的执行顺序是:先输出""Hello World!"",然后输出""undefined""。因此E选项""Hello World! undefined""是正确答案。"
+36,javascript,下列表达式中，返回值为true的是（）,single,"①Object.is(NaN,NaN)
+②Object.is(+0,-0)
+③NaN === NaN
+④+0 === -0",①④,①③,②③,②④,A,"这道题目考察了JavaScript中Object.is()方法和严格相等运算符===的区别。答案选A是正确的。
+让我们逐项分析:
+①Object.is(NaN,NaN) 返回true
+- Object.is()方法判断两个值是否相同,它认为NaN和NaN是相同的
+- 这与普通的相等(==)和严格相等(===)运算符的行为不同
+②Object.is(+0,-0) 返回false
+- Object.is()方法可以区分+0和-0,认为它们是不同的值
+③NaN === NaN 返回false
+- 在JavaScript中,使用严格相等运算符===比较NaN与任何值(包括NaN自身)都返回false
+- 这是NaN的特殊性质
+④+0 === -0 返回true
+- 在JavaScript中,使用严格相等运算符===比较+0和-0会返回true
+- 这是因为===运算符将+0和-0视为相同的值
+所以选项中①和④为true,答案A是正确的。"
+37,javascript,以下代码的输出是什么？,single,"const obj = {
+[Symbol.toPrimitive](hint) {
+if (hint === 'number') return 42;
+if (hint === 'string') return 'hello';
+return true;
+}
+};
+console.log(+obj);
+console.log(`${obj}`);
+console.log(obj + '');",42 hello hello,42 hello true,42 42 hello,NaN hello true,B,Symbol.toPrimitive方法接收hint参数。+obj触发number hint，返回42。模板字符串`${obj}`触发string hint，返回'hello'。obj + ''触发default hint（不是string），因为+运算符在操作数不都是字符串时使用default hint，返回true，然后与''拼接得到'true'。
+38,javascript,执行以下程序，输出结果为（）,single,"function P(){
+  this.a = 1;
+}
+P.prototype.a = 2;
+var p = new P();
+delete p.a;
+console.log(p.a);",1,2,undefined,其他选项均不正确,B,对象p自身拥有属性a，值为1，该属性本身不具有DontDelete属性，也就是可以使用delete进行删除的属性。同时，其原型对象上也有属性a，其值为2，原型对象上的属性都具有DontDelete特性的，不可删除的。因此，当使用delete p.a时，会删除对象p自身的属性a，而不会删除其原型对象上的属性a，也就是在删除后，访问到的属性a是其原型对象上的属性，所以输出结果为2，B选项正确。
+39,javascript,"a,b,c值分别是什么：",single,"const a = ([]) ? true : false;
+const b = [] ==false ? true : false;
+const c = ({}==false) ? true : false;",false，true，true,true ，true，true,true ，false，false,true ，true，false,D,"这道题考察JavaScript中的类型转换和比较运算的概念。让我们逐个分析每个表达式：
+a = ([]) ? true : false
+空数组[]是一个真值，在进行布尔转换时结果为true，所以a的值为true。
+b = [] == false ? true : false
+这里涉及到==运算符的隐式类型转换规则：
+1. 数组[]会先被转换为原始值，即空字符串""""
+2. 空字符串""""会被转换为数字0
+3. false也会被转换为数字0
+4. 0 == 0 为true
+所以b的值为true。
+c = ({} == false) ? true : false
+当对象{}与布尔值false进行==比较时：
+1. 对象{}转换为原始值会得到""[object Object]""
+2. 这个字符串无法与false相等
+3. {} == false 结果为false
+所以c的值为false。
+因此结果为：
+a = true
+b = true
+c = false
+D选项(true，true，false)完全符合以上分析，是正确答案。"
+40,javascript,以下Js程序的输出是什么（）,single,"val = 'smtg';
+console.log ( 'Value is ' + ( val  ===  'smtg' )  ?  'Something' : 'Nothing' );",Value is Something,Value is Nothing,NaN,以上都不对,D,"运算符优先级：+ 的优先级高于 条件（三元）运算符 ? :。
+因此表达式实际被解析为：
+('Value is ' + (val === 'smtg')) ? 'Something' : 'Nothing'
+而不是 'Value is ' + ((val === 'smtg') ? 'Something' : 'Nothing')。
+val === 'smtg' 结果为 true，'Value is ' + true 得到字符串 ""Value is true""。
+非空字符串是 truthy 值，所以条件成立，整个三元表达式返回 'Something'。
+最终 console.log 输出 Something。"
 FLUSH1,frontend,以下哪个选项不是动态加载DLL时需要做的事情？,single,,引入lib文件,引入带有库函数声明、定义的头文件,调用LoadLibrary或LoadLibraryEx,调用GetProcAddress,A,"同花顺前端笔试第一题
 DLL（动态链接库）是一个包含可执行函数和资源的模块，通常用于共享代码和资源。它的文件扩展名为 .dll，在Windows系统中被广泛使用。DLL文件不能独立运行，而是需要由其他应用程序调用。它的主要作用是通过动态链接机制，在程序运行时加载所需的函数或资源，从而提高代码复用性和程序效率。
 调用DLL主要有静态调用和动态调用两种方式。
