@@ -134,6 +134,15 @@ async function fetchQuestions() {
     }
 }
 
+// 构建标签前缀映射（ID -> 前缀列表）
+const labelsMap = computed(() => {
+    const map = new Map()
+    for (const item of labels.value) {
+        const prefixes = parseLabelPrefixes(item.label)
+        map.set(item.id, prefixes)
+    }
+    return map
+})
 // ========== 基于搜索条件过滤数据 ==========
 const filteredQuestions = computed(() => {
     let result = questions.value
@@ -152,7 +161,10 @@ const filteredQuestions = computed(() => {
     }
 
     if (labelFilter && labelFilter !== '不限') {
-        result = result.filter(item => item.knowledgeType === labelFilter)
+        result = result.filter(item => {
+            const prefixes = labelsMap.value.get(item.id) || []
+            return prefixes.includes(labelFilter)
+        })
     }
 
     return result
