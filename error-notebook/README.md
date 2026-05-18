@@ -1,34 +1,69 @@
-# error-notebook
+# 错题薄题目管理系统v0.0.0
 
-This template should help get you started developing with Vue 3 in Vite.
+## 项目概述
 
-## Recommended IDE Setup
+错题薄题目管理系统 `error-notebook` 是用于管理题目和技术学习的项目。该项目前端使用 Vue 3 和 Vite 构建，后端***（暂定）***基于 Node.js 和 Express 框架。
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+在 `v0.0.0`版本中，项目主要实现的功能为：
 
-## Recommended Browser Setup
+### 顶部导航栏
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+包括LOGO、首页、题库、编辑、练习。***（待优化、部分内容尚未实现）***
 
-## Customize configuration
+### 题库
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+#### 题库
 
-## Project Setup
+这一部分为错题题目列表的显示。包括搜索框搜索功能（根据题目本身、标签进行搜索），已经导入的题目部分内容的显示，点击具体序号跳转到具体的题目细节展示，列表分页实现。***（这部分内容在后续开发中引入通用表格组件进行了优化）***
+
+#### 真题 & 知识点
+
+这一部分为真题和知识点PDF的列表显示。***（暂定，后续会进行修改以及优化）***
+
+### 编辑
+
+#### 导入
+
+这一部分是一个实现了题库部分错题题目列表数据导入的表单。目前能够正确实现导入功能，但***表单的样式以及所处位置还需要优化***。
+
+#### 标签
+
+这一部分实现了题库部分错题题目列表数据标签的查看、搜索、插入功能，***后续需要修改优化***。
+
+### 未实现的部分
+
+首页、练习。***（后续实现）***
+
+### 数据的储存
+
+目前项目数据存储在本地CSV文件以及PDF中，导致频繁的git推送，***考虑是否需要重写后端代码引入数据库解决***。
+
+## 推荐的 IDE 设置
+
+* **VS Code** +  **Vue (Official) 插件** （即 Volar）， **并且禁用 Vetur** 。
+  因为 Volar 对 Vue 3 的 Composition API、单文件组件等支持更完善，Vetur 主要面向 Vue 2，二者同时启用会产生冲突。
+
+## 项目设置命令
 
 ```sh
 npm install
 ```
 
+**安装依赖** ：根据 `package.json` 下载项目所需的所有 npm 包。
+
 ### Compile and Hot-Reload for Development
 
 ```sh
 npm run dev
+```
+
+**开发模式** ：启动 Vite 开发服务器，支持热模块替换（HMR），代码修改后页面自动刷新。
+
+**后端运行**：
+
+```
+cd backend
+node server.js
 ```
 
 ### Compile and Minify for Production
@@ -37,8 +72,12 @@ npm run dev
 npm run build
 ```
 
+**生产构建** ：对项目进行打包、压缩、优化，输出到 `dist` 目录，用于部署到线上服务器。
+
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh
-npm run lint
+npm run lin
 ```
+
+**代码检查** ：运行 ESLint 检查代码风格和潜在错误（需要项目已配置 ESLint）。
