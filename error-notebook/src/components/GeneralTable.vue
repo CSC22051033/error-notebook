@@ -205,6 +205,10 @@
 .blue-table thead tr {
     background: linear-gradient(98deg, #1e3a8a 0%, #2b5fcc 100%);
     border-bottom: none;
+    /* 固定表头 */
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 .blue-table th {
     color: #ffffff;
