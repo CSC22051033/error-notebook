@@ -290,7 +290,7 @@ watch(filteredQuestions, () => {
             :data="tableData" 
             :loading="loading" 
             :error="error" 
-            :field-mapping="fieldMapping"
+            :columnLabels="fieldMapping"
             @edit="handleEdit" 
             @delete="handleDelete"
             @id-click="handleIdClick"
@@ -300,12 +300,11 @@ watch(filteredQuestions, () => {
 
 <style scoped>
 .container {
-    max-width: 1000px;
+    max-width: 80dvw;
     min-height: 600px;
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
-    overflow-x: auto;   /* 保证宽度超出时出现滚动条 */
 }
 
 h2 {
@@ -361,4 +360,10 @@ h2 {
     color: #444;
     font-size: 14px;
 }
+
+:deep(.container) {
+    margin: 0;
+    padding: 0;
+}
+
 </style>
