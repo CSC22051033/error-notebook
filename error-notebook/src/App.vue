@@ -15,5 +15,6 @@ import TopBar from './components/TopBar.vue';
   .main-content{
     background-color: rgba(128, 128, 128, 0.056);
     display: flex;
+    height: 90dvh;
   }
 </style>

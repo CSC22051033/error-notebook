@@ -62,7 +62,7 @@ const handleSelect = (path) => {
 
 <style scoped>
 .sideContainer {
-    min-height: 95dvh;
+    min-height: 90dvh;
     width: 15dvw;
     border-right: 1px solid #d9e8f5;
     max-height: 90dvh;

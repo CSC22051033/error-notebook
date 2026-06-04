@@ -5,10 +5,13 @@ import PastListView from '../views/PastListView.vue'
 import KnowListView from '../views/KnowListView.vue'
 import QuestionView from '../views/QuestionView.vue'
 import LabelView from '../views/LabelView.vue'
+import Home from '@/views/Home.vue'
 
 const routes = [
   {
-    path: '/'
+    path: '/',
+    name: 'Home',
+    component: Home
   },
   {
     path: '/import',
