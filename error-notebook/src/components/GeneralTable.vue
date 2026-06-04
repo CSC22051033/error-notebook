@@ -187,7 +187,7 @@
 /* ===== 表格容器 ===== */
 .tableContainer {
     overflow: auto;
-    height: 70dvh;
+    height: 75dvh;
     width: 80dvw;
     display: block;
 
