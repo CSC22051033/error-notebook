@@ -179,12 +179,12 @@ const filteredQuestions = computed(() => {
 
 // 计算属性：供表格使用的精简数据
 const tableData = computed(() => {
-  return filteredQuestions.value.map(item => ({
-    id: item.id,
-    knowledgeType: item.knowledgeType,
-    questionType: item.questionType,
-    questionStem: item.questionStem
-  }))
+    return filteredQuestions.value.map(item => ({
+        id: item.id,
+        knowledgeType: item.knowledgeType,
+        questionType: item.questionType,
+        questionStem: item.questionStem
+    }))
 })
 
 // 更新搜索摘要信息
@@ -227,17 +227,6 @@ function performSearch() {
     // 若需要按标签/内容过滤，请自行补充 filterQuestions computed
 }
 
-// 题目类型显示文本
-function getTypeText(type) {
-    const map = {
-        'single': '单选题',
-        'multiple': '多选题',
-        'truefalse': '判断题',
-        'shortanswer': '简答题'
-    }
-    return map[type] || type
-}
-
 // ---------- 事件处理 ----------
 const handleEdit = (row) => {
     console.log('编辑题目:', row)
@@ -273,24 +262,28 @@ watch(filteredQuestions, () => {
 
 <template>
     <div class="container">
-        <h2>题目列表</h2>
-
         <div class="select">
             <div class="search-row">
-                <input
+                <el-input
                     v-model="searchText"
-                    type="text"
                     placeholder="请输入搜索内容"
                     class="search-input"
+                    clearable
                 />
-                <select v-model="selectedLabel" class="label-select">
-                    <option v-for="option in labelOptions" :key="option" :value="option">
-                        {{ option }}
-                    </option>
-                </select>
-                <button @click="performSearch" class="search-btn">搜索</button>
+                <el-select
+                    v-model="selectedLabel"
+                    placeholder="请选择标签"
+                    class="label-select"
+                >
+                    <el-option
+                        v-for="option in labelOptions"
+                        :key="option"
+                        :label="option"
+                        :value="option"
+                    />
+                </el-select>
+                <el-button @click="performSearch" class="search-btn">搜索</el-button>
             </div>
-            <div class="search-summary">{{ searchSummary }}</div>
         </div>
 
         <GeneralTable 
@@ -320,18 +313,9 @@ h2 {
     margin-bottom: 20px;
 }
 
-.select {
-    margin-top: 20px;
-    padding: 16px;
-    border: 1px solid #e8e8e8;
-    border-radius: 8px;
-    background: #fafafa;
-}
-
 .search-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
     align-items: center;
 }
 
@@ -339,9 +323,7 @@ h2 {
 .label-select {
     flex: 1;
     min-width: 200px;
-    padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 5px 6px;
     font-size: 14px;
 }
 
@@ -361,12 +343,6 @@ h2 {
 
 .search-btn:hover {
     background: #1976D2;
-}
-
-.search-summary {
-    margin-top: 12px;
-    color: #444;
-    font-size: 14px;
 }
 
 :deep(.container) {
