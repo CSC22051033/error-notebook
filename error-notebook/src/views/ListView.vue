@@ -1,9 +1,11 @@
 <script setup>
+//#region 导入与依赖
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import GeneralTable from '../components/GeneralTable.vue'
+//#endregion
 
-// ---------- 响应式数据 ----------
+//#region 响应式数据
 const loading = ref(false)
 const error = ref('')
 const questions = ref([])          // 存储处理后的题目数据
@@ -14,11 +16,14 @@ const appliedSearchText = ref('')
 const appliedSelectedLabel = ref('不限')
 const labelOptions = ref(['不限'])
 const searchSummary = ref('当前显示全部题目')
+//#endregion
 
+//#region 路由实例
 const route = useRoute()
 const router = useRouter()
+//#endregion
 
-// 中英文映射表
+//#region 表格列映射与替换规则
 const fieldMapping = {
     id: 'ID',
     knowledgeType: '知识点类型',
@@ -31,9 +36,9 @@ const replaceRules = [
     { column: 'questionType', from: 'multiple', to: '多选题' },
     { column: 'questionType', from: 'shortanswer', to: '简答题' },
 ]
+//#endregion
 
-
-// ---------- 辅助函数 ----------
+//#region 辅助函数
 // 解析ID排序用的
 function parseId(id) {
     const match = id.match(/^(\D*)(\d*)$/)
@@ -65,7 +70,9 @@ function buildLabelOptions(rawLabels) {
     }
     return ['不限', ...Array.from(set).sort()]
 }
+//#endregion
 
+//#region 路由相关函数
 // 从路由恢复搜索条件
 function loadQueryFromRoute() {
     const { searchText: qSearchText, selectedLabel: qSelectedLabel } = route.query
@@ -89,7 +96,9 @@ function syncRouterQuery() {
     if (appliedSelectedLabel.value && appliedSelectedLabel.value !== '不限') query.selectedLabel = appliedSelectedLabel.value
     router.replace({ path: '/list', query })
 }
+//#endregion
 
+//#region 数据获取API
 // 获取题目列表
 async function fetchQuestions() {
     loading.value = true
@@ -141,6 +150,24 @@ async function fetchQuestions() {
     }
 }
 
+// 获取标签选项
+async function fetchLabelOptions() {
+    try {
+        const res = await fetch('http://localhost:3000/api/labels')
+        const result = await res.json()
+        if (result.success) {
+            labels.value = result.data
+            labelOptions.value = buildLabelOptions(result.data)
+        } else {
+            labelOptions.value = ['不限']
+        }
+    } catch (err) {
+        labelOptions.value = ['不限']
+    }
+}
+//#endregion
+
+//#region 计算属性
 // 构建标签前缀映射（ID -> 前缀列表）
 const labelsMap = computed(() => {
     const map = new Map()
@@ -150,7 +177,8 @@ const labelsMap = computed(() => {
     }
     return map
 })
-// ========== 基于搜索条件过滤数据 ==========
+
+// 基于搜索条件过滤数据
 const filteredQuestions = computed(() => {
     let result = questions.value
     const searchKeyword = appliedSearchText.value.trim().toLowerCase()
@@ -186,48 +214,19 @@ const tableData = computed(() => {
         questionStem: item.questionStem
     }))
 })
+//#endregion
 
-// 更新搜索摘要信息
-function updateSearchSummary() {
-    const keyword = appliedSearchText.value.trim() || '空'
-    const label = appliedSelectedLabel.value
-    const count = filteredQuestions.value.length
-    if (label !== '不限') {
-        searchSummary.value = `搜索内容：“${keyword}”，标签：“${label}”，共找到 ${count} 条题目`
-    } else {
-        searchSummary.value = `搜索内容：“${keyword}”，标签：不限，共找到 ${count} 条题目`
-    }
-}
-
-// 获取标签选项
-async function fetchLabelOptions() {
-    try {
-        const res = await fetch('http://localhost:3000/api/labels')
-        const result = await res.json()
-        if (result.success) {
-            labels.value = result.data
-            labelOptions.value = buildLabelOptions(result.data)
-        } else {
-            labelOptions.value = ['不限']
-        }
-    } catch (err) {
-        labelOptions.value = ['不限']
-    }
-}
-
+//#region 搜索
 // 执行搜索
 function performSearch() {
     appliedSearchText.value = searchText.value
     appliedSelectedLabel.value = selectedLabel.value
     searchSummary.value = `搜索内容：${searchText.value || '空'}，标签：${selectedLabel.value}`
     syncRouterQuery()
-    // 注意：数据过滤仍由父组件负责？这里需要根据搜索条件重新过滤 questions
-    // 但 fetchQuestions 获取全量数据，如果要做前端过滤，需要增加一个 computed 列表传给 GeneralTable
-    // 为了保持简单，这里只做路由同步，实际过滤可后续扩展（原代码未实现过滤逻辑，仅展示全量）
-    // 若需要按标签/内容过滤，请自行补充 filterQuestions computed
 }
+//#endregion
 
-// ---------- 事件处理 ----------
+//#region 事件处理
 const handleEdit = (row) => {
     console.log('编辑题目:', row)
     // 例如跳转到编辑页：router.push(`/edit/${row.id}`)
@@ -238,7 +237,7 @@ const handleDelete = (row) => {
     // 调用删除 API，然后刷新列表
 }
 
-// 编辑按钮的跳转逻辑
+// ID点击跳转
 const handleIdClick = (item) => {
     router.push({
         name: 'Question',
@@ -246,18 +245,15 @@ const handleIdClick = (item) => {
         query: route.query   // 保留当前 URL 的 query 参数
     })
 }
+//#endregion
 
-// ---------- 生命周期 ----------
+//#region 生命周期与监听器
 onMounted(() => {
     loadQueryFromRoute()
     fetchQuestions()
     fetchLabelOptions()
 })
-
-// 监听过滤后的数据变化，自动更新摘要
-watch(filteredQuestions, () => {
-    updateSearchSummary()
-}, { immediate: true })  // immediate: true 保证初始也执行一次
+//#endregion
 </script>
 
 <template>
