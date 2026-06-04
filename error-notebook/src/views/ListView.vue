@@ -26,6 +26,13 @@ const fieldMapping = {
     questionStem: '题干'
 }
 
+const replaceRules = [
+    { column: 'questionType', from: 'single', to: '单选题' },
+    { column: 'questionType', from: 'multiple', to: '多选题' },
+    { column: 'questionType', from: 'shortanswer', to: '简答题' },
+]
+
+
 // ---------- 辅助函数 ----------
 // 解析ID排序用的
 function parseId(id) {
@@ -291,6 +298,7 @@ watch(filteredQuestions, () => {
             :loading="loading" 
             :error="error" 
             :columnLabels="fieldMapping"
+            :replace-rules="replaceRules"
             @edit="handleEdit" 
             @delete="handleDelete"
             @id-click="handleIdClick"
